@@ -1,0 +1,14 @@
+Constraints:
+	- Iedereen alles ongeveer evenveel (soft)
+	- Elke persoon max. 1 x per week (hard)
+	- Als een persoon keukencorvee heeft mag hij de week ervoor/erna geen keukencorvee doen. (hard) (geld voor alle categorieën)
+	- Gang corvee is elke 3 weken (hard)
+	- De laatste week van die 3 weken die persoon gaan ander corvee hebben (hard)
+	- Mensen kunnen kiezen welke corvee's ze niet willen doen als ze ninja's hebben (soft)
+	- Rekening houden met laatste week van het oude rooster (hard)
+	- In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
+	- Als het rooster langer is dan 11 weken (N aantal weken) dan moet iedereen elk taakje minstens floor(N / 11) aantal keer gedaan hebben. (hard)
+
+Voorbeeld:
+	Keuken	Keuken	Keuken	Gang	Gang	WC	Douche
+	Sam		Ramon	Maarten	Penny	Lizzy	Bob	Binky	
