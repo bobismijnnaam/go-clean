@@ -4,7 +4,6 @@ import jenes.chromosome.IntegerChromosome;
 import jenes.population.Fitness;
 import jenes.population.Individual;
 
-// TODO: als rooster 11 lang is iedereen alles 1 x, als rooster 22 lang is iedereen alles 2 x, etc.
 public class AlcaFit extends Fitness<IntegerChromosome> {
 	
 	public static enum Job {
@@ -175,6 +174,34 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 		return true;
 	}
 	
+	public boolean everyoneHasEachJobOnce(IntegerChromosome chrom) {
+		boolean[][] hasDone = new boolean[PERSONS][JOBS]; 
+		for (int p = 0; p < PERSONS; p++) {
+			hasDone[p] = new boolean[JOBS];
+		}
+		
+		int job;
+		int person;
+		int sum = 0; // TODO: Think of better name
+		for (int w = 0; w < WEEKS; w++) {
+			for (int j = 0; j < JOBS; j++) {
+				job = getJob(j, w);
+				person = chrom.getValue(job);
+				
+				if (!hasDone[person][j]) {
+					hasDone[person][j] = true;
+					sum++;
+				}
+			}
+		}
+		
+		if (sum == JOBS * PERSONS) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	// TODO: Extra objective by checking spread of everyones task?
 	/**
 	 * Evaluates a given individual and sets its score.
@@ -190,11 +217,16 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 			
 			boolean noOverlap = hasNoOverlap(chrom);
 			
+			boolean hasEachJobOnce = everyoneHasEachJobOnce(chrom);
+			
 			int score = 0;
 			if (noDoubles) {
 				score++;
 			}
 			if (noOverlap) {
+				score++;
+			}
+			if (hasEachJobOnce) {
 				score++;
 			}
 			

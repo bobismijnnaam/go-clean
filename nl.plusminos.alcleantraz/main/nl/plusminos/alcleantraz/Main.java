@@ -1,5 +1,8 @@
 package nl.plusminos.alcleantraz;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import jenes.GeneticAlgorithm;
 import jenes.algorithms.SimpleGA;
 import jenes.chromosome.IntegerChromosome;
@@ -10,14 +13,14 @@ import jenes.tutorials.utils.Utils;
 
 public class Main {
 	private static int SCHEDULE_JOBS = 5;
-	private static int SCHEDULE_WEEKS = 6; // Prefer a multiple of 3
+	private static int SCHEDULE_WEEKS = 12; // Prefer a multiple of 3
 	private static int SCHEDULE_SLOTS = SCHEDULE_JOBS * SCHEDULE_WEEKS;
 	private static int SCHEDULE_PERSONS = 11;
 	
 	private static int CHROMOSOME_LENGTH = SCHEDULE_SLOTS;
-	private static int POPULATION_SIZE = 100;
+	private static int POPULATION_SIZE = 2000;
 	
-	private static int GENERATION_LIMIT = 5000;
+	private static int GENERATION_LIMIT = 40000;
 	
 	private static GeneticAlgorithm<IntegerChromosome> ga;
 	
@@ -52,6 +55,18 @@ public class Main {
 		// Initialize simple Genetic Algorithm
 		ga = new SimpleGA<IntegerChromosome>(AlcaFit.fitness, pop, GENERATION_LIMIT);
 		
+		System.out.println("[Parameters]");
+		System.out.println("Weeks: " + SCHEDULE_WEEKS);
+		System.out.println("Persons: " + SCHEDULE_PERSONS);
+		System.out.println("Jobs: " + SCHEDULE_JOBS);
+		System.out.println("Population: " + POPULATION_SIZE);
+		System.out.println("Maximum generation: " + GENERATION_LIMIT);
+		System.out.println();
+		
+    	Calendar cal = Calendar.getInstance();
+    	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+    	System.out.println("Starting at: " + sdf.format(cal.getTime()) + "\n");
+		
 		// Calculate the schedule
 		ga.evolve(); // FIGHT!
 		
@@ -67,6 +82,9 @@ public class Main {
 		Main.printSchedule(legals.get(0), args);
 		
 		Utils.printStatistics(stats);
+		
+		cal = Calendar.getInstance();
+    	System.out.println("Terminated at: " + sdf.format(cal.getTime()) + "\n");
 		
 	}
 }
