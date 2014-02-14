@@ -12,5 +12,3 @@ Constraints:
 Voorbeeld:
 	Keuken	Keuken	Keuken	Gang	Gang	WC	Douche
 	Sam		Ramon	Maarten	Penny	Lizzy	Bob	Binky	
-	
-Test
