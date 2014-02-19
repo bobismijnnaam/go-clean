@@ -17,7 +17,7 @@ import jenes.tutorials.utils.Utils;
 
 public class Main implements GenerationEventListener<IntegerChromosome> {
 	private static int SCHEDULE_JOBS = 5;
-	private static int SCHEDULE_WEEKS = 12; // Prefer a multiple of 3
+	private static int SCHEDULE_WEEKS = 15; // Prefer a multiple of 3
 	private static int SCHEDULE_SLOTS = SCHEDULE_JOBS * SCHEDULE_WEEKS;
 	private static int SCHEDULE_PERSONS = 11;
 	
@@ -25,7 +25,7 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 	private static int POPULATION_SIZE = 1000;
 	private static int TARGET_SCORE = SCHEDULE_SLOTS; // Slots + 0 + 0 (you don't want overlaps/doubles)
 	
-	private static int GENERATION_LIMIT = 80000;
+	private static int GENERATION_LIMIT = 30000;
 	
 	private static GeneticAlgorithm<IntegerChromosome> ga;
 	
@@ -35,7 +35,7 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 		this.args = args;
 	}
 	
-	public static void printSchedule(Individual<IntegerChromosome> ind, String[] names, AlcaFit fitness) {
+	public void printSchedule(Individual<IntegerChromosome> ind, String[] names, AlcaFit fitness) {
 		int pos;
 		int person;
 		IntegerChromosome chrom = ind.getChromosome();
@@ -52,9 +52,22 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 		}
 		
 		System.out.println("\nConstraints:");
-		System.out.println("Has no duplicates in every week: " + fitness.hasNoDoublesPerWeek(chrom));
-		System.out.println("Has no consequent identical jobs: " + fitness.hasNoOverlap(chrom));
-		System.out.println("Everyone has each job at least once: " + fitness.hasPerfectAssignment(chrom));
+		System.out.println("Has no duplicates in every week: " + fitness.hasNoDoublesPerWeek(chrom) + " (" + fitness.countDoublesPerWeek(chrom) + ")");
+		System.out.println("Has no consequent identical jobs: " + fitness.hasNoOverlap(chrom) + " (" + fitness.countOverlaps(chrom) + ")");
+		System.out.println("Everyone has each job at least once: " + fitness.hasPerfectAssignment(chrom) + " (" + fitness.countPerfectAssignment(chrom) + ")");
+		System.out.println("Distribution (ideal = 0): " + fitness.gradeDistribution(chrom));
+		System.out.println("\nActual distribution of work: ");
+		
+		int jobs = 0;
+		for (int p = 0; p < SCHEDULE_PERSONS; p++) {
+			jobs = 0;
+			for (int j = 0; j < SCHEDULE_SLOTS; j++) {
+				if (chrom.getValue(j) == p) {
+					jobs++;
+				}
+			}
+			System.out.println("\t" + args[p] + ": " + jobs);
+		}
 		
 		System.out.println();
 	}
@@ -79,7 +92,7 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 		AlcaFit fitness = new AlcaFit(SCHEDULE_PERSONS, SCHEDULE_JOBS, SCHEDULE_WEEKS, null);
 		
 		// Setup genetic algorithm
-		ga = new AlcaGA(fitness, pop, GENERATION_LIMIT, TARGET_SCORE);
+		ga = new AlcaGA(fitness, pop, GENERATION_LIMIT);
 	
 		AbstractStage<IntegerChromosome> selection = new TournamentSelector<IntegerChromosome>(3);
 		AbstractStage<IntegerChromosome> crossover = new OnePointCrossover<IntegerChromosome>(0.8);
@@ -117,13 +130,22 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 		
 		System.out.println("\n\n[Results]\nSchedule:");
 		
-		Main.printSchedule(legals.get(0), args, fitness);
+		printSchedule(legals.get(0), args, fitness);
 		
-		System.out.println("Statistics:");
+		System.out.println("<nonsense>\n\nStatistics:");
 		Utils.printStatistics(stats);
+		System.out.println("</nonsense>\n");
 		
 		System.out.println("Generations needed: " + algostats.getGenerations());
-		System.out.println("Algorithm execution time (minutes): " + algostats.getExecutionTime() / 1000 / 60);
+
+		cal = Calendar.getInstance();
+		System.out.println("Finished at: " + sdf.format(cal.getTime()));
+		
+		if (algostats.getGenerations() < GENERATION_LIMIT) {
+			System.out.println("[SUCCESS]");
+		} else {
+			System.out.println("[FAILURE]");
+		}
 	}
 	
 	public static void main(String[] args) {

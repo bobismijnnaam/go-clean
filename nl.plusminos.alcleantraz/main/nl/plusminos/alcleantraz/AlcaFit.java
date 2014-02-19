@@ -65,8 +65,8 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 	 */
 	public AlcaFit(int persons, int jobs, int weeks, int[] lastWeek) {
 		// super(true);
-		super(false, false, true);
-		// The order is determined by the todo-list
+		super(false, false, false, true);
+		// The order is determined by the todo-list (in notes.txt)
 		
 		PERSONS = persons;
 		JOBS = jobs;
@@ -284,7 +284,31 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 		return uniqueCombos;
 	}
 	
-	// TODO: Extra objective by checking spread of everyones task?
+	public float gradeDistribution(IntegerChromosome chrom) {
+		float jpp = (float) SLOTS / (float) PERSONS;
+		float[] hasJobs = new float[PERSONS];
+		
+		int job, person;
+		
+		for (int w = 0; w < WEEKS; w++) {
+			for (int j = 0; j < JOBS; j++) {
+				job = getJob(j, w);
+				person = chrom.getValue(job);
+				
+				hasJobs[person]++;
+			}
+		}
+		
+		float total = 0;
+		for (int p = 0; p < PERSONS; p++) {
+			hasJobs[p] -= jpp;
+			hasJobs[p] *= hasJobs[p];
+			total += hasJobs[p];
+		}
+		
+		return total;
+	}
+	
 	/**
 	 * Evaluates a given individual and sets its score.
 	 */
@@ -294,34 +318,35 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 		} else { // Go ahead!
 			IntegerChromosome chrom = individual.getChromosome();
 			
-			// Test if this schedule has doubles in a week. False if it has, true if it doesn't
-//			boolean noDoubles = hasNoDoublesPerWeek(chrom);
-//			
-//			boolean noOverlap = hasNoOverlap(chrom);
-//			
-//			boolean hasEachJobOnce = hasPerfectAssignment(chrom);
+			float distribution = gradeDistribution(chrom);
 			
 			int doubles = countDoublesPerWeek(chrom);
 			
 			int overlaps = countOverlaps(chrom);
 			
-			int jobSpreading = countPerfectAssignment(chrom);
+			float jobSpreading = countPerfectAssignment(chrom);
 			
-			individual.setScore(doubles, overlaps, jobSpreading);
-			
-//			int score = 0;
-//			if (noDoubles) {
-//				score++;
-//			}
-//			if (noOverlap) {
-//				score++;
-//			}
-//			if (hasEachJobOnce) {
-//				score++;
-//			}
-			
-//			individual.setScore(score);
+			individual.setScore(distribution, doubles, overlaps, jobSpreading);
 		}
 	}
-
 }
+
+//int score = 0;
+//if (noDoubles) {
+//	score++;
+//}
+//if (noOverlap) {
+//	score++;
+//}
+//if (hasEachJobOnce) {
+//	score++;
+//}
+
+//individual.setScore(score);
+
+// Test if this schedule has doubles in a week. False if it has, true if it doesn't
+//boolean noDoubles = hasNoDoublesPerWeek(chrom);
+//
+//boolean noOverlap = hasNoOverlap(chrom);
+//
+//boolean hasEachJobOnce = hasPerfectAssignment(chrom);
