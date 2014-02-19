@@ -22,10 +22,10 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 	private static int SCHEDULE_PERSONS = 11;
 	
 	private static int CHROMOSOME_LENGTH = SCHEDULE_SLOTS;
-	private static int POPULATION_SIZE = 4000;
+	private static int POPULATION_SIZE = 1000;
 	private static int TARGET_SCORE = 3;
 	
-	private static int GENERATION_LIMIT = 10000;
+	private static int GENERATION_LIMIT = 80000;
 	
 	private static GeneticAlgorithm<IntegerChromosome> ga;
 	
@@ -54,7 +54,7 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 		System.out.println("\nConstraints:");
 		System.out.println("Has no duplicates in every week: " + fitness.hasNoDoublesPerWeek(chrom));
 		System.out.println("Has no consequent identical jobs: " + fitness.hasNoOverlap(chrom));
-		System.out.println("Everyone has each job at least once: " + fitness.everyoneHasEachJobOnce(chrom));
+		System.out.println("Everyone has each job at least once: " + fitness.hasPerfectAssignment(chrom));
 		
 		System.out.println();
 	}
@@ -63,7 +63,9 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 	public void onGeneration(GeneticAlgorithm<IntegerChromosome> ga, long arg1) {
 		int gen = ga.getGeneration();
 		if ((gen & 1023) == 0) {
-			System.out.println("Generation: " + ga.getGeneration() + " Minutes: " + (ga.getStatistics().getExecutionTime() / 1000 / 60));
+			System.out.print("\nGeneration: " + ga.getGeneration() + " Minutes: " + (ga.getStatistics().getExecutionTime() / 1000 / 60 + " - "));
+		} else if ((gen & 127) == 0) {
+			System.out.print("|");
 		}
 	}
 	
@@ -101,7 +103,7 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 		
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		System.out.println("Starting at: " + sdf.format(cal.getTime()) + "\n");
+		System.out.println("Starting at: " + sdf.format(cal.getTime()));
 		
 		// Calculate the schedule/////////
 		ga.evolve(); // FIGHT!////////////
@@ -113,7 +115,7 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 		
 		Group<IntegerChromosome> legals = stats.getGroup(Population.LEGALS);
 		
-		System.out.println("\n[Results]\nSchedule:");
+		System.out.println("\n\n[Results]\nSchedule:");
 		
 		Main.printSchedule(legals.get(0), args, fitness);
 		

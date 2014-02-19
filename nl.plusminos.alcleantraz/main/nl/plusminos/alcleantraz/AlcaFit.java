@@ -43,6 +43,9 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 		}
 	}
 
+	// Constants
+	private final int NO_JOB = -1;
+	
 	// Settings
 	private final int PERSONS;
 	private final int JOBS;
@@ -136,9 +139,9 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 		if (week == 0) {
 			if (LAST_WEEK != null) {
 				// TODO
-				return -1;
+				return NO_JOB;
 			} else {
-				return -1;
+				return NO_JOB;
 			}
 		} else {
 			int pos;
@@ -177,7 +180,35 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 		return true;
 	}
 	
-	public boolean everyoneHasEachJobOnce(IntegerChromosome chrom) {
+	/**
+	 * Counts all the jobs where the person doing the job the previous week is the same as this week.
+	 * @param chrom The chromosome to evaluate
+	 * @return The cases where last week's person was the same as this week
+	 */
+	public int countOverlap(IntegerChromosome chrom) {
+		int person;
+		int pos;
+		int overlaps = 0;
+		
+		for (int w = 0; w < WEEKS; w++) {
+			for (int j = 0; j < JOBS; j++) {
+				pos = getJob(j, w);
+				person = chrom.getValue(pos);
+				if (j == getPreviousJob(chrom, w, person)) {
+					overlaps++;
+				}
+			}
+		}
+		
+		return overlaps;
+	}
+	
+	/**
+	 * Checks whether or not each person is assigned each job at least once
+	 * @param chrom The chromosome to evaluate
+	 * @return Return true if every person is assigned every job at least once.
+	 */
+	public boolean hasPerfectAssignment(IntegerChromosome chrom) {
 		boolean[][] hasDone = new boolean[PERSONS][JOBS]; 
 		for (int p = 0; p < PERSONS; p++) {
 			hasDone[p] = new boolean[JOBS];
@@ -220,7 +251,7 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 			
 			boolean noOverlap = hasNoOverlap(chrom);
 			
-			boolean hasEachJobOnce = everyoneHasEachJobOnce(chrom);
+			boolean hasEachJobOnce = hasPerfectAssignment(chrom);
 			
 			int score = 0;
 			if (noDoubles) {

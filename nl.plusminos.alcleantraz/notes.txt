@@ -11,7 +11,8 @@ Constraints:
 
 Ideeën:
 	- Laten crossoveren op punten waar een nieuwe job begint (dus alleen verschillende disciplines met elkaar wisselen, en niet halverwege de keuken ofzo) 
-	- I.p.v. boolean floats/ints voor kwaliteit
+	- I.p.v. boolean floats/ints voor kwaliteit. (countX i.p.v. hasX)
+	- Multiple objective i.p.v. booleans optellen
 	- Meerdere doelen i.p.v. som van doelen als doel
 	
 Voorbeeld:
