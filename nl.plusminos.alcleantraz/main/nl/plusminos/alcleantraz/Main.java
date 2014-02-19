@@ -23,7 +23,7 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 	
 	private static int CHROMOSOME_LENGTH = SCHEDULE_SLOTS;
 	private static int POPULATION_SIZE = 1000;
-	private static int TARGET_SCORE = 3;
+	private static int TARGET_SCORE = SCHEDULE_SLOTS; // Slots + 0 + 0 (you don't want overlaps/doubles)
 	
 	private static int GENERATION_LIMIT = 80000;
 	

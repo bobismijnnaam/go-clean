@@ -64,13 +64,17 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 	 * @param lastWeek The last week of previous schedule. Leave null if you don't want to consider it.
 	 */
 	public AlcaFit(int persons, int jobs, int weeks, int[] lastWeek) {
-		super(true);
+		// super(true);
+		super(false, false, true);
+		// The order is determined by the todo-list
 		
 		PERSONS = persons;
 		JOBS = jobs;
 		WEEKS = weeks;
 		SLOTS = jobs * weeks;
 		LAST_WEEK = lastWeek;
+		
+		inWeek = new boolean[PERSONS]; // The array to store whether or not a person has a job that week
 	}
 	
 	/**
@@ -101,9 +105,6 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 	public boolean hasNoDoublesPerWeek(IntegerChromosome chrom) {
 		int pos; // The position of a job in the chromosome
 		int person; // The person on a job
-		inWeek = new boolean[PERSONS]; // The array to store whether or not a person has a job that week
-		
-		resetInWeekArray();
 		
 		// Loop through the weeks
 		for (int w = 0; w < WEEKS; w++) {
@@ -115,6 +116,7 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 				person = chrom.getValue(pos);
 				
 				if (inWeek[person]) { // Return false if this person already appears in the week
+					resetInWeekArray();
 					return false;
 				} else { // Set the slot to true because this person has at least a job this week
 					inWeek[person] = true;
@@ -126,6 +128,41 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Returns the amount of weeks that have a double in it
+	 * @param chrom
+	 * @return The sum
+	 */
+	public int countDoublesPerWeek(IntegerChromosome chrom) {
+		int pos; // The position of a job in the chromosome
+		int person; // The person on a job
+		int doubleWeeks = 0; // Amount of double weeks
+		
+		// Loop through the weeks
+		for (int w = 0; w < WEEKS; w++) {
+			// Loop through the jobs
+			for (int j = 0; j < JOBS; j++) {
+				// Get the position of the job in the chromosome
+				pos = getJob(j, w);
+				// Get the person on the job
+				person = chrom.getValue(pos);
+				
+				if (inWeek[person]) { // Return false if this person already appears in the week
+					resetInWeekArray();
+					doubleWeeks++;
+					break;
+				} else { // Set the slot to true because this person has at least a job this week
+					inWeek[person] = true;
+				}
+			}
+			
+			// Reset the inWeek[PERSONS] array for the next week
+			resetInWeekArray();
+		}
+		
+		return doubleWeeks;
 	}
 	
 	/**
@@ -185,7 +222,7 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 	 * @param chrom The chromosome to evaluate
 	 * @return The cases where last week's person was the same as this week
 	 */
-	public int countOverlap(IntegerChromosome chrom) {
+	public int countOverlaps(IntegerChromosome chrom) {
 		int person;
 		int pos;
 		int overlaps = 0;
@@ -209,6 +246,21 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 	 * @return Return true if every person is assigned every job at least once.
 	 */
 	public boolean hasPerfectAssignment(IntegerChromosome chrom) {
+		int uniqueCombos = countPerfectAssignment(chrom);
+		
+		if (uniqueCombos == JOBS * PERSONS) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Counts how many unique jobs each person does.
+	 * @param chrom
+	 * @return The total of all unique combinations of person and job
+	 */
+	public int countPerfectAssignment(IntegerChromosome chrom) {
 		boolean[][] hasDone = new boolean[PERSONS][JOBS]; 
 		for (int p = 0; p < PERSONS; p++) {
 			hasDone[p] = new boolean[JOBS];
@@ -216,7 +268,7 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 		
 		int job;
 		int person;
-		int sum = 0; // TODO: Think of better name
+		int uniqueCombos = 0;
 		for (int w = 0; w < WEEKS; w++) {
 			for (int j = 0; j < JOBS; j++) {
 				job = getJob(j, w);
@@ -224,16 +276,12 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 				
 				if (!hasDone[person][j]) {
 					hasDone[person][j] = true;
-					sum++;
+					uniqueCombos++;
 				}
 			}
 		}
 		
-		if (sum == JOBS * PERSONS) {
-			return true;
-		}
-		
-		return false;
+		return uniqueCombos;
 	}
 	
 	// TODO: Extra objective by checking spread of everyones task?
@@ -247,24 +295,32 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 			IntegerChromosome chrom = individual.getChromosome();
 			
 			// Test if this schedule has doubles in a week. False if it has, true if it doesn't
-			boolean noDoubles = hasNoDoublesPerWeek(chrom);
+//			boolean noDoubles = hasNoDoublesPerWeek(chrom);
+//			
+//			boolean noOverlap = hasNoOverlap(chrom);
+//			
+//			boolean hasEachJobOnce = hasPerfectAssignment(chrom);
 			
-			boolean noOverlap = hasNoOverlap(chrom);
+			int doubles = countDoublesPerWeek(chrom);
 			
-			boolean hasEachJobOnce = hasPerfectAssignment(chrom);
+			int overlaps = countOverlaps(chrom);
 			
-			int score = 0;
-			if (noDoubles) {
-				score++;
-			}
-			if (noOverlap) {
-				score++;
-			}
-			if (hasEachJobOnce) {
-				score++;
-			}
+			int jobSpreading = countPerfectAssignment(chrom);
 			
-			individual.setScore(score);
+			individual.setScore(doubles, overlaps, jobSpreading);
+			
+//			int score = 0;
+//			if (noDoubles) {
+//				score++;
+//			}
+//			if (noOverlap) {
+//				score++;
+//			}
+//			if (hasEachJobOnce) {
+//				score++;
+//			}
+			
+//			individual.setScore(score);
 		}
 	}
 
