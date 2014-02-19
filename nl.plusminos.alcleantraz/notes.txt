@@ -9,6 +9,11 @@ Constraints:
 	0 In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
 	- Als het rooster langer is dan 11 weken (N aantal weken) dan moet iedereen elk taakje minstens floor(N / 11) aantal keer gedaan hebben. (hard)
 
+Ideeën:
+	- Laten crossoveren op punten waar een nieuwe job begint (dus alleen verschillende disciplines met elkaar wisselen, en niet halverwege de keuken ofzo) 
+	- I.p.v. boolean floats/ints voor kwaliteit
+	- Meerdere doelen i.p.v. som van doelen als doel
+	
 Voorbeeld:
 	Keuken	Keuken	Keuken	Gang	Gang	WC	Douche
 	Sam		Ramon	Maarten	Penny	Lizzy	Bob	Binky	

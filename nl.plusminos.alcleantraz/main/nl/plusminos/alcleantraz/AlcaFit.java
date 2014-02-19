@@ -42,29 +42,32 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 			return 9999;
 		}
 	}
-	
-	// Make the class
-	public static final AlcaFit fitness = new AlcaFit();
-	
+
 	// Settings
-	private static int PERSONS = 0;
-	private static int JOBS = 0;
-	private static int WEEKS = 0;
-	private static int SLOTS = 0;
-	private static boolean CHECK_PREVIOUS_SCHEDULE = false;
+	private final int PERSONS;
+	private final int JOBS;
+	private final int WEEKS;
+	private final int SLOTS;
+	private final int[] LAST_WEEK;
 	
 	// Preset variables
 	private boolean[] inWeek;
 	
-	private AlcaFit() {
+	/**
+	 * Initializes the class.
+	 * @param persons The amount of persons you want to roster
+	 * @param jobs The amount of jobs you have
+	 * @param weeks The amount of weeks you want to plan ahead
+	 * @param lastWeek The last week of previous schedule. Leave null if you don't want to consider it.
+	 */
+	public AlcaFit(int persons, int jobs, int weeks, int[] lastWeek) {
 		super(true);
-	}
-	
-	public static void initialize(int persons, int jobs, int weeks) {
-		AlcaFit.PERSONS = persons;
-		AlcaFit.JOBS = jobs;
-		AlcaFit.WEEKS = weeks;
-		AlcaFit.SLOTS = JOBS * WEEKS;
+		
+		PERSONS = persons;
+		JOBS = jobs;
+		WEEKS = weeks;
+		SLOTS = jobs * weeks;
+		LAST_WEEK = lastWeek;
 	}
 	
 	/**
@@ -73,8 +76,8 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 	 * @param week The week in the schedule
 	 * @return The position
 	 */
-	public static int getJob(int job, int week) {
-		return week * AlcaFit.JOBS + job;
+	public int getJob(int job, int week) {
+		return week * JOBS + job;
 	}
 	
 	/**
@@ -95,7 +98,7 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 	public boolean hasNoDoublesPerWeek(IntegerChromosome chrom) {
 		int pos; // The position of a job in the chromosome
 		int person; // The person on a job
-		inWeek = new boolean[AlcaFit.PERSONS]; // The array to store whether or not a person has a job that week
+		inWeek = new boolean[PERSONS]; // The array to store whether or not a person has a job that week
 		
 		resetInWeekArray();
 		
@@ -131,7 +134,7 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 	 */
 	public int getPreviousJob(IntegerChromosome chrom, int week, int person) {
 		if (week == 0) {
-			if (CHECK_PREVIOUS_SCHEDULE) {
+			if (LAST_WEEK != null) {
 				// TODO
 				return -1;
 			} else {
