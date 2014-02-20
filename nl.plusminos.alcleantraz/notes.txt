@@ -1,5 +1,5 @@
 Constraints:
-	- Iedereen alles ongeveer evenveel (soft)
+	0 Iedereen alles ongeveer evenveel (soft)
 	0 Elke persoon max. 1 x per week (hard)
 	0 Als een persoon keukencorvee heeft mag hij de week ervoor/erna geen keukencorvee doen. (hard) (geld voor alle categorieën)
 	- Gang corvee is elke 3 weken (hard)
@@ -8,6 +8,15 @@ Constraints:
 	- Rekening houden met laatste week van het oude rooster (hard)
 	0 In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
 	- Als het rooster langer is dan 11 weken (N aantal weken) dan moet iedereen elk taakje minstens floor(N / 11) aantal keer gedaan hebben. (hard)
+
+Ideeën:
+	- Laten crossoveren op punten waar een nieuwe job begint (dus alleen verschillende disciplines met elkaar wisselen, en niet halverwege de keuken ofzo) 
+	- I.p.v. boolean floats/ints voor kwaliteit. (countX i.p.v. hasX)
+	- Multiple objective i.p.v. booleans optellen
+	- Meerdere doelen i.p.v. som van doelen als doel
+
+Todo:
+	- Per generatiereport (1024) informatie geven over de conditie van de populatie
 
 Voorbeeld:
 	Keuken	Keuken	Keuken	Gang	Gang	WC	Douche
