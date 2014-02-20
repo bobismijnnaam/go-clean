@@ -12,10 +12,10 @@ import jenes.population.Population.Statistics.Group;
 import jenes.tutorials.utils.Utils;
 
 public class Main {
-	private static int SCHEDULE_JOBS = 5;
-	private static int SCHEDULE_WEEKS = 12; // Prefer a multiple of 3
+	private static int SCHEDULE_JOBS = 3;
+	private static int SCHEDULE_WEEKS = 6; // Prefer a multiple of 3
 	private static int SCHEDULE_SLOTS = SCHEDULE_JOBS * SCHEDULE_WEEKS;
-	private static int SCHEDULE_PERSONS = 11;
+	private static int SCHEDULE_PERSONS = 3;
 	
 	private static int CHROMOSOME_LENGTH = SCHEDULE_SLOTS;
 	private static int POPULATION_SIZE = 2000;
