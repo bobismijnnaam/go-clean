@@ -1,10 +1,9 @@
-package nl.plusminos.alcleantraz.base;
-
-// Deprecated, just like AlcaFit and AlcaGA.
+package nl.plusminos.alcleantraz.vanilla;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import nl.plusminos.alcleantraz.utils.ArgumentParser;
 import jenes.GenerationEventListener;
 import jenes.GeneticAlgorithm;
 import jenes.chromosome.IntegerChromosome;
@@ -17,17 +16,16 @@ import jenes.stage.operator.common.SimpleMutator;
 import jenes.stage.operator.common.TournamentSelector;
 import jenes.tutorials.utils.Utils;
 
-import nl.plusminos.alcleantraz.utils.ArgumentParser;
-
-public class Base implements GenerationEventListener<IntegerChromosome> {
-	private final int SCHEDULE_JOBS;
+public class Vanilla implements GenerationEventListener<IntegerChromosome> {
+	
+	private final int SCHEDULE_JOBS_NO_HALLWAY;
+	private final int SCHEDULE_JOBS_HALLWAY;
 	private final int SCHEDULE_WEEKS; // Prefer a multiple of 3
 	private final int SCHEDULE_SLOTS;
 	private final int SCHEDULE_PERSONS;
 	
 	private final int CHROMOSOME_LENGTH;
 	private final int POPULATION_SIZE;
-	private final int UNIQUE_PERSON_JOB_COMBOS; // Slots + 0 + 0 (you don't want overlaps/doubles)
 	
 	private final int GENERATION_LIMIT;
 	
@@ -35,38 +33,40 @@ public class Base implements GenerationEventListener<IntegerChromosome> {
 	
 	private String[] persons = null;
 	private String[] jobs = null;
-	
-	public Base(String[] persons, String[] jobs, int weeks, int popSize, int genLimit) {
+
+	//@ requires weeks % 3 == 0;
+	public Vanilla(String[] persons, String[] jobs, int weeks, int popSize, int genLimit) {
 		this.persons = persons;
 		this.jobs = jobs;
 		
-		SCHEDULE_JOBS = jobs.length;
+		SCHEDULE_JOBS_HALLWAY = jobs.length;
+		SCHEDULE_JOBS_NO_HALLWAY = SCHEDULE_JOBS_HALLWAY - 2;
+		
 		SCHEDULE_PERSONS = persons.length;
 		SCHEDULE_WEEKS = weeks;
-		SCHEDULE_SLOTS = SCHEDULE_JOBS * SCHEDULE_WEEKS;
+		SCHEDULE_SLOTS = SCHEDULE_JOBS_NO_HALLWAY * SCHEDULE_WEEKS + SCHEDULE_WEEKS / 3 * 2;
 		
 		CHROMOSOME_LENGTH = SCHEDULE_SLOTS;
 		POPULATION_SIZE = popSize;
-		UNIQUE_PERSON_JOB_COMBOS = SCHEDULE_PERSONS * SCHEDULE_JOBS;
 		
 		GENERATION_LIMIT = genLimit;
 	}
 	
-	public void printSchedule(Individual<IntegerChromosome> ind, String[] names, AlcaFit fitness) {
+	public void printSchedule(Individual<IntegerChromosome> ind, VanillaFit fitness) {
 		int pos;
 		int person;
 		IntegerChromosome chrom = ind.getChromosome();
 		
-		for (int j = 0; j < SCHEDULE_JOBS; j++) {
+		for (int j = 0; j < SCHEDULE_JOBS_HALLWAY; j++) {
 			System.out.print(jobs[j] + "\t");
 		}
 		System.out.println();
 		
 		for (int w = 0; w < SCHEDULE_WEEKS; w++) {
-			for (int j = 0; j < SCHEDULE_JOBS; j++) {
-				pos = fitness.getJob(j, w);
-				person = chrom.getValue(pos);
-				System.out.print(names[person] + "\t");
+			for (int j = 0; j < SCHEDULE_JOBS_NO_HALLWAY; j++) {
+//				pos = fitness.getJob(j, w);
+//				person = chrom.getValue(pos);
+//				System.out.print(persons[person] + "\t");
 			}
 			System.out.println();
 		}
@@ -91,23 +91,23 @@ public class Base implements GenerationEventListener<IntegerChromosome> {
 		
 		System.out.println();
 	}
-	
+
 	@Override
-	public void onGeneration(GeneticAlgorithm<IntegerChromosome> ga, long arg1) {
-		nl.plusminos.alcleantraz.utils.Utils.reportGeneration(ga);
+	public void onGeneration(GeneticAlgorithm<IntegerChromosome> thisGeneration, long arg1) {
+		nl.plusminos.alcleantraz.utils.Utils.reportGeneration(thisGeneration);
 	}
-	
-	public IntegerChromosome run() {
+
+	public IntegerChromosome generate() {
 		// Set some initial vars
 		Individual<IntegerChromosome> sample = new Individual<IntegerChromosome>(
 				new IntegerChromosome(CHROMOSOME_LENGTH, 0 ,SCHEDULE_PERSONS - 1));
 		Population<IntegerChromosome> pop = new Population<IntegerChromosome>(sample, POPULATION_SIZE);
 		
 		// Initialize fitness instance
-		AlcaFit fitness = new AlcaFit(SCHEDULE_PERSONS, SCHEDULE_JOBS, SCHEDULE_WEEKS, null);
+		VanillaFit fitness = new VanillaFit(SCHEDULE_PERSONS, SCHEDULE_JOBS_HALLWAY, SCHEDULE_WEEKS, null);
 		
 		// Setup genetic algorithm
-		ga = new AlcaGA(fitness, pop, GENERATION_LIMIT);
+		ga = new VanillaGA(fitness, pop, GENERATION_LIMIT);
 	
 		AbstractStage<IntegerChromosome> selection = new TournamentSelector<IntegerChromosome>(3);
 		AbstractStage<IntegerChromosome> crossover = new OnePointCrossover<IntegerChromosome>(0.8);
@@ -123,10 +123,9 @@ public class Base implements GenerationEventListener<IntegerChromosome> {
 		System.out.println("[Parameters]");
 		System.out.println("Weeks: " + SCHEDULE_WEEKS);
 		System.out.println("Persons: " + SCHEDULE_PERSONS);
-		System.out.println("Jobs: " + SCHEDULE_JOBS);
+		System.out.println("Jobs (including hallway): " + SCHEDULE_JOBS_HALLWAY);
 		System.out.println("Population: " + POPULATION_SIZE);
 		System.out.println("Maximum generation: " + GENERATION_LIMIT);
-		System.out.println("Unqiue combos of jobs and persons: " + UNIQUE_PERSON_JOB_COMBOS);
 		System.out.println();
 		
 		Calendar cal = Calendar.getInstance();
@@ -145,7 +144,7 @@ public class Base implements GenerationEventListener<IntegerChromosome> {
 		
 		System.out.println("\n\n[Results]\nSchedule:");
 		
-		printSchedule(legals.get(0), persons, fitness);
+		printSchedule(legals.get(0), fitness);
 		
 		System.out.println("<nonsense>\n\nStatistics:");
 		Utils.printStatistics(stats);
@@ -165,19 +164,21 @@ public class Base implements GenerationEventListener<IntegerChromosome> {
 		return legals.get(0).getChromosome();
 	}
 	
-	// args = "binky penny maarten ramon bob granny sam jeroen lizzy sigerd spyro 15 Keuken Keuken Keuken WC Toilet Gang Gang"
+	// Args should be names and last one the amount of weeks. Should be a multiple of 3
+	// args = "binky penny maarten ramon bob granny sam jeroen lizzy emile 15" 
 	public static void main(String[] args) {
 		ArgumentParser ap = new ArgumentParser(args);
 
-//		int weeks = 15; // Prefer a multiple of 3
 		int popSize = 1000;
-		int uniqueCombos = ap.getReducedJobs(2).length * ap.getPersons().length; // Slots + 0 + 0 (you don't want overlaps/doubles)
 		int genLimit = 30000;
 		
-		Base main = new Base(ap.getPersons(), ap.getReducedJobs(2), ap.getWeeks(), popSize, genLimit);
+		String[] jobs = new String[]{"Keuken", "Keuken", "Keuken", "Toilet", "Douche", "Gang", "Gang"};
 		
-		IntegerChromosome result = main.run();
+		Vanilla vanillaScheduleFactory = new Vanilla(args, jobs, 15, popSize, genLimit);
+		
+		IntegerChromosome result = vanillaScheduleFactory.generate();
 		
 		System.out.println("Resulting integer chromosome: " + result.toString());
 	}
+	
 }

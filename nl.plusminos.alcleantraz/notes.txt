@@ -4,20 +4,47 @@ Constraints:
 	0 Als een persoon keukencorvee heeft mag hij de week ervoor/erna geen keukencorvee doen. (hard) (geld voor alle categorieën)
 	- Gang corvee is elke 3 weken (hard)
 	- De laatste week van die 3 weken die persoon gaan ander corvee hebben (hard)
-	- Mensen kunnen kiezen welke corvee's ze niet willen doen als ze ninja's hebben (soft)
 	- Rekening houden met laatste week van het oude rooster (hard)
 	0 In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
-	- Als het rooster langer is dan 11 weken (N aantal weken) dan moet iedereen elk taakje minstens floor(N / 11) aantal keer gedaan hebben. (hard)
+	
+	* Mensen kunnen kiezen welke corvee's ze niet willen doen als ze ninja's hebben (soft/hard?)
 
 Ideeën:
 	- Laten crossoveren op punten waar een nieuwe job begint (dus alleen verschillende disciplines met elkaar wisselen, en niet halverwege de keuken ofzo) 
 	- I.p.v. boolean floats/ints voor kwaliteit. (countX i.p.v. hasX)
 	- Multiple objective i.p.v. booleans optellen
-	- Meerdere doelen i.p.v. som van doelen als doel
+	- Meerdere doelen i.p.v. som van doelen als doel'
+	+ Gang includen in IntegerChromosome. Dit kan als je een offset meerekent bij het berekenen van de positie van taakjes in het chromosoom
 
 Todo:
 	- Per generatiereport (1024) informatie geven over de conditie van de populatie
 
 Voorbeeld:
 	Keuken	Keuken	Keuken	Gang	Gang	WC	Douche
-	Sam		Ramon	Maarten	Penny	Lizzy	Bob	Binky	
+	Sam		Ramon	Maarten	Penny	Lizzy	Bob	Binky
+	
+[Workflow in gedachte voor nieuwe versie]
+	1) Genereer rooster dat aan alle constraints voldoet (mét perfecte verdeling!)
+		- Perfecte verdeling houdt in dat het verschil tussen het aantal taken tussen twee willekeurige personen
+			op z'n hoogst 1 is.
+	2) Bereken wie er allemaal ninja's in de plus staan en in de min van het vorige rooster
+		- Informatie over wie en wat ninja'de gaat hierbij verloren. Hier is echter een goede reden voor.
+			- Stel je voor dat een persoon vorige periode 5 ninjas had gepleegd, in 3 verschillende taken.
+			Laten we zeggen, 2 ninjas WC, 2 ninjas toilet, 1 ninja keuken.
+			- Echter, de persoon is niet perfect. Hij heeft namelijk zelf ook enkele keren zijn corvee gespijbeld.
+			Laten we zeggen dat hij 2 keer gespijbeld heeft. Welke dingen hij overgeslagen heeft laten we buiten beschouwing.
+				-Is dit juist (buiten beschouwing laten van taken)? Volgens mij wel. Wat als hij gespijbeld heeft bij douche
+				en gang corvée? Dan zijn beide verzamelingen niet gerelateerd. Koppelen aan elkaar zou evt. nog kunnen d.m.v.
+				gewichten, of door als ze wel overlappen daar uit te balanceren waar mogelijk)
+			- Als je punt 1 en punt 2 combineerd volgt daaruit dat de persoon nog 3 ninjas over heeft voor
+			de volgende periode. Echter, in welke categorieën? Het is moeilijk op een duidelijke manier vast t e stellen
+			welke taken de persoon nu niet hoeft te doen en welke taken hij wel moet doen. Het is ambigu.
+				- Dit geldt het meest als er geen overlap is tussen ninja's en geninjade taken. Als er meer overlap
+				is lijkt het ietsje duidelijker maar dan heb je in principe nog steeds de keuze.
+	3) Laat mensen met ninja's aangeven welke taken ze niet willen doen
+		- De gedachte bij punt 2) in gedachten houdend lijkt het me het handigst om mensen zelf te laten
+		beslissen welke taken ze wel en niet willen doen. Deze lege plekken worden vervolgens opgevuld met de mensen die
+		nog ninjas negatief stonden.
+			- Dit zou goed moeten gaan want de hoeveelheid ninjas zijn gelijk aan momenten dat mensen geninjad zijn
+			dus dat is perfect opvulbaar.
+	4) Laat op basis van 2) en 3) een verbeterd rooster genereren	

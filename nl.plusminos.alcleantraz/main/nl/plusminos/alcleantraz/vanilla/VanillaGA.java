@@ -1,22 +1,20 @@
-package nl.plusminos.alcleantraz.base;
-
-// Deprecated
+package nl.plusminos.alcleantraz.vanilla;
 
 import jenes.GeneticAlgorithm;
 import jenes.chromosome.IntegerChromosome;
 import jenes.population.Individual;
 import jenes.population.Population;
 
-public class AlcaGA extends GeneticAlgorithm<IntegerChromosome> {
+public class VanillaGA extends GeneticAlgorithm<IntegerChromosome> {
+	public final VanillaFit FITNESS;
 	
-	private final AlcaFit FITNESS;
-	
-	public AlcaGA(AlcaFit fitness, Population<IntegerChromosome> pop, int generationLimit) {
+	public VanillaGA(VanillaFit fitness, Population<IntegerChromosome> pop, int generationLimit) {
 		super(fitness, pop, generationLimit);
 		
 		FITNESS = fitness;
 	}
 	
+	// Should stop when a suitable schedule is found
 	@Override
 	protected boolean end() {
 		Population.Statistics<IntegerChromosome> stat = this.getCurrentPopulation().getStatistics();

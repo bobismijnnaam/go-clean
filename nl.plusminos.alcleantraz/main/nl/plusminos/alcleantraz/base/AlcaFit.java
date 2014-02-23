@@ -1,5 +1,7 @@
 package nl.plusminos.alcleantraz.base;
 
+// Deprecated
+
 import jenes.chromosome.IntegerChromosome;
 import jenes.population.Fitness;
 import jenes.population.Individual;

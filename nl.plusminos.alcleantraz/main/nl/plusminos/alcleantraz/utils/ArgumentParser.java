@@ -23,6 +23,7 @@ public class ArgumentParser {
 	    }
 	}
 	
+	// Requires format: [Persons]Weeks[Jobs] with [Xs] being arbitrary amount of X 
 	public ArgumentParser(String[] args) {
 		int breakIndex = 0;
 		for (int i = 0; i < args.length; i++) {
