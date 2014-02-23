@@ -19,7 +19,7 @@ public class Main implements GenerationEventListener<IntegerChromosome> {
 	private static int SCHEDULE_JOBS = 5;
 	private static int SCHEDULE_WEEKS = 15; // Prefer a multiple of 3
 	private static int SCHEDULE_SLOTS = SCHEDULE_JOBS * SCHEDULE_WEEKS;
-	private static int SCHEDULE_PERSONS = 3;
+	private static int SCHEDULE_PERSONS = 11;
 	
 	private static int CHROMOSOME_LENGTH = SCHEDULE_SLOTS;
 	private static int POPULATION_SIZE = 1000;
