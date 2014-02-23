@@ -1,4 +1,4 @@
-package nl.plusminos.alcleantraz;
+package nl.plusminos.alcleantraz.base;
 
 import jenes.GeneticAlgorithm;
 import jenes.chromosome.IntegerChromosome;
@@ -28,6 +28,6 @@ public class AlcaGA extends GeneticAlgorithm<IntegerChromosome> {
 		boolean hasEachJobOnce = FITNESS.hasPerfectAssignment(chrom);
 		float distribution = FITNESS.gradeDistribution(chrom);
 		
-		return hasEachJobOnce && noOverlap && noDoubles && distribution <= 3.0;
+		return hasEachJobOnce && noOverlap && noDoubles; // && distribution <= 3.0;
 	}
 }

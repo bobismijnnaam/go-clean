@@ -1,4 +1,4 @@
-package nl.plusminos.alcleantraz;
+package nl.plusminos.alcleantraz.base;
 
 import jenes.chromosome.IntegerChromosome;
 import jenes.population.Fitness;
