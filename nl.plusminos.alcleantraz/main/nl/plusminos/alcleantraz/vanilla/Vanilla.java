@@ -3,7 +3,6 @@ package nl.plusminos.alcleantraz.vanilla;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import nl.plusminos.alcleantraz.utils.ArgumentParser;
 import jenes.GenerationEventListener;
 import jenes.GeneticAlgorithm;
 import jenes.chromosome.IntegerChromosome;
@@ -18,11 +17,11 @@ import jenes.tutorials.utils.Utils;
 
 public class Vanilla implements GenerationEventListener<IntegerChromosome> {
 	
-	private final int SCHEDULE_JOBS_NO_HALLWAY;
-	private final int SCHEDULE_JOBS_HALLWAY;
-	private final int SCHEDULE_WEEKS; // Prefer a multiple of 3
-	private final int SCHEDULE_SLOTS;
-	private final int SCHEDULE_PERSONS;
+	public static int SCHEDULE_JOBS_NO_HALLWAY;
+	public static int SCHEDULE_JOBS_HALLWAY;
+	public static int SCHEDULE_WEEKS; // Prefer a multiple of 3
+	public static int SCHEDULE_SLOTS;
+	public static int SCHEDULE_PERSONS;
 	
 	private final int CHROMOSOME_LENGTH;
 	private final int POPULATION_SIZE;
@@ -55,6 +54,7 @@ public class Vanilla implements GenerationEventListener<IntegerChromosome> {
 	public void printSchedule(Individual<IntegerChromosome> ind, VanillaFit fitness) {
 		int pos;
 		int person;
+		int maxJob;
 		IntegerChromosome chrom = ind.getChromosome();
 		
 		for (int j = 0; j < SCHEDULE_JOBS_HALLWAY; j++) {
@@ -63,19 +63,21 @@ public class Vanilla implements GenerationEventListener<IntegerChromosome> {
 		System.out.println();
 		
 		for (int w = 0; w < SCHEDULE_WEEKS; w++) {
-			for (int j = 0; j < SCHEDULE_JOBS_NO_HALLWAY; j++) {
-//				pos = fitness.getJob(j, w);
-//				person = chrom.getValue(pos);
-//				System.out.print(persons[person] + "\t");
+			maxJob = fitness.hasHallway(w) ? SCHEDULE_JOBS_HALLWAY : SCHEDULE_JOBS_NO_HALLWAY;
+			
+			for (int j = 0; j < maxJob; j++) {
+				pos = fitness.getJobPos(j, w);
+				person = chrom.getValue(pos);
+				System.out.print(persons[person] + "\t");
 			}
 			System.out.println();
 		}
 		
 		System.out.println("\nConstraints:");
-		System.out.println("Has no duplicates in every week: " + fitness.hasNoDoublesPerWeek(chrom) + " (" + fitness.countDoublesPerWeek(chrom) + ")");
-		System.out.println("Has no consequent identical jobs: " + fitness.hasNoOverlap(chrom) + " (" + fitness.countOverlaps(chrom) + ")");
-		System.out.println("Everyone has each job at least once: " + fitness.hasPerfectAssignment(chrom) + " (" + fitness.countPerfectAssignment(chrom) + ")");
-		System.out.println("Distribution (ideal = 0): " + fitness.gradeDistribution(chrom));
+		System.out.println("Has no duplicates in every week: " + fitness.hasNoDoublesPerWeek(chrom) + " (" + fitness.countWeeksWithDoubles(chrom) + ")");
+//		System.out.println("Has no consequent identical jobs: " + fitness.hasNoOverlap(chrom) + " (" + fitness.countOverlaps(chrom) + ")");
+//		System.out.println("Everyone has each job at least once: " + fitness.hasPerfectAssignment(chrom) + " (" + fitness.countPerfectAssignment(chrom) + ")");
+//		System.out.println("Distribution (ideal = 0): " + fitness.gradeDistribution(chrom));
 		System.out.println("\nActual distribution of work: ");
 		
 		int jobs = 0;
@@ -161,20 +163,21 @@ public class Vanilla implements GenerationEventListener<IntegerChromosome> {
 			System.out.println("[FAILURE]\n");
 		}
 		
+		System.out.println("{{END}}\n");
+		
 		return legals.get(0).getChromosome();
 	}
 	
 	// Args should be names and last one the amount of weeks. Should be a multiple of 3
 	// args = "binky penny maarten ramon bob granny sam jeroen lizzy emile 15" 
 	public static void main(String[] args) {
-		ArgumentParser ap = new ArgumentParser(args);
-
 		int popSize = 1000;
-		int genLimit = 30000;
+		int genLimit = 3000;
+		int weeks = 6;
 		
 		String[] jobs = new String[]{"Keuken", "Keuken", "Keuken", "Toilet", "Douche", "Gang", "Gang"};
 		
-		Vanilla vanillaScheduleFactory = new Vanilla(args, jobs, 15, popSize, genLimit);
+		Vanilla vanillaScheduleFactory = new Vanilla(args, jobs, weeks, popSize, genLimit);
 		
 		IntegerChromosome result = vanillaScheduleFactory.generate();
 		

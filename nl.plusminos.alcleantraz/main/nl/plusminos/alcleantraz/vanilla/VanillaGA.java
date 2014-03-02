@@ -24,10 +24,10 @@ public class VanillaGA extends GeneticAlgorithm<IntegerChromosome> {
 		IntegerChromosome chrom = candidate.getChromosome();
 		
 		boolean noDoubles = FITNESS.hasNoDoublesPerWeek(chrom);
-		boolean noOverlap = FITNESS.hasNoOverlap(chrom);
-		boolean hasEachJobOnce = FITNESS.hasPerfectAssignment(chrom);
-		float distribution = FITNESS.gradeDistribution(chrom);
+//		boolean noOverlap = FITNESS.hasNoOverlap(chrom);
+//		boolean hasEachJobOnce = FITNESS.hasPerfectAssignment(chrom);
+//		float distribution = FITNESS.gradeDistribution(chrom);
 		
-		return hasEachJobOnce && noOverlap && noDoubles; // && distribution <= 3.0;
+		return noDoubles; // && distribution <= 3.0;
 	}
 }

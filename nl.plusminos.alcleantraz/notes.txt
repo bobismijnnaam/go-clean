@@ -1,20 +1,19 @@
 Constraints:
-	0 Iedereen alles ongeveer evenveel (soft)
-	0 Elke persoon max. 1 x per week (hard)
-	0 Als een persoon keukencorvee heeft mag hij de week ervoor/erna geen keukencorvee doen. (hard) (geld voor alle categorieën)
-	- Gang corvee is elke 3 weken (hard)
-	- De laatste week van die 3 weken die persoon gaan ander corvee hebben (hard)
+	- Iedereen alles ongeveer evenveel (zo goed mogelijk; soft)
+	v Elke persoon max. 1 x per week (hard)
+	- Als een persoon keukencorvee heeft mag hij de week ervoor/erna geen keukencorvee doen. (hard) (geld voor alle categorieën)
+	v Gang corvee is elke 3 weken (hard)
+	v De laatste week van die 3 weken die persoon gaan ander corvee hebben (hard)
 	- Rekening houden met laatste week van het oude rooster (hard)
-	0 In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
+	- In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
 	
-	* Mensen kunnen kiezen welke corvee's ze niet willen doen als ze ninja's hebben (soft/hard?)
+	* Mensen kunnen kiezen welke corvee's ze niet willen doen als ze ninja's hebben (hard)
 
 Ideeën:
 	- Laten crossoveren op punten waar een nieuwe job begint (dus alleen verschillende disciplines met elkaar wisselen, en niet halverwege de keuken ofzo) 
-	- I.p.v. boolean floats/ints voor kwaliteit. (countX i.p.v. hasX)
-	- Multiple objective i.p.v. booleans optellen
-	- Meerdere doelen i.p.v. som van doelen als doel'
-	+ Gang includen in IntegerChromosome. Dit kan als je een offset meerekent bij het berekenen van de positie van taakjes in het chromosoom
+	o I.p.v. boolean floats/ints voor kwaliteit. (countX i.p.v. hasX)
+	o Multiple objective i.p.v. booleans optellen
+	v Gang includen in IntegerChromosome. Dit kan als je een offset meerekent bij het berekenen van de positie van taakjes in het chromosoom
 
 Todo:
 	- Per generatiereport (1024) informatie geven over de conditie van de populatie
@@ -22,7 +21,16 @@ Todo:
 Voorbeeld:
 	Keuken	Keuken	Keuken	Gang	Gang	WC	Douche
 	Sam		Ramon	Maarten	Penny	Lizzy	Bob	Binky
-	
+
+Posities van taken in genoom per week:
+	Keuken = 0-1-2
+	WC = 3
+	Douche = 4
+	Gang = 5-6
+
+Elke keer dat het een gang week is hebben diegenen daarna nog 2 weken om hun shit te doen. Daarna is de volgende.
+Dat kan cosmetisch nog verschoven worden maar voor nu is het makkelijker om 't zo te doen (modulus = 0 is mooi)
+
 [Workflow in gedachte voor nieuwe versie]
 	1) Genereer rooster dat aan alle constraints voldoet (mét perfecte verdeling!)
 		- Perfecte verdeling houdt in dat het verschil tussen het aantal taken tussen twee willekeurige personen
