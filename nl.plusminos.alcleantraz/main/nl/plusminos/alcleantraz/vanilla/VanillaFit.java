@@ -24,6 +24,23 @@ public class VanillaFit extends Fitness<IntegerChromosome> {
 	// Preset variables
 	private boolean[] inWeek;
 	
+	//@ requires weeks % 3 == 0;
+	public VanillaFit(int persons, int jobs, int weeks, int[] lastWeek) {
+		super(false, true);
+		// super(false, false, false, true); // This comes later. For multi objective selection
+		// The order is determined by the todo-list (in notes.txt)
+		
+		PERSONS = persons;
+		JOBS = jobs;
+		JOBS_NO_HALLWAY = JOBS - 2;
+		WEEKS = weeks;
+		SLOTS = JOBS_NO_HALLWAY * WEEKS // Normal tasks
+				+ WEEKS / 3 * 2; // Hallway tasks
+		LAST_WEEK = lastWeek;
+		
+		inWeek = new boolean[PERSONS]; // The array to store whether or not a person has a job that week
+	}
+	
 	public boolean hasHallway(int week) {
 		return week % 3 == 0;
 	}
@@ -51,6 +68,44 @@ public class VanillaFit extends Fitness<IntegerChromosome> {
 		}
 		
 		return getWeekBeginning(week) + job;
+	}
+	
+	public boolean hasPerfectAssignment(IntegerChromosome chrom) {
+		int uniqueCombos = countPerfectAssignment(chrom);
+		
+		if (uniqueCombos == PERSONS * JOBS) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public int countPerfectAssignment(IntegerChromosome chrom) {
+		boolean[][] hasDone = new boolean[PERSONS][JOBS]; 
+		for (int p = 0; p < PERSONS; p++) {
+			hasDone[p] = new boolean[JOBS];
+		}
+		
+		int jobPos;
+		int person;
+		int uniqueCombos = 0;
+		int maxJob;
+		
+		for (int w = 0; w < WEEKS; w++) {
+			maxJob = hasHallway(w) ? JOBS : JOBS_NO_HALLWAY;
+			
+			for (int j = 0; j < maxJob; j++) {
+				jobPos = getJobPos(j, w);
+				person = chrom.getValue(jobPos);
+				
+				if (!hasDone[person][j]) {
+					hasDone[person][j] = true;
+					uniqueCombos++;
+				}
+			}
+		}
+		
+		return uniqueCombos;
 	}
 	
 	public boolean hasNoDoublesPerWeek(IntegerChromosome chrom) {
@@ -109,34 +164,23 @@ public class VanillaFit extends Fitness<IntegerChromosome> {
 		return weeksWithDoubles;	
 	}
 	
-	//@ requires weeks % 3 == 0;
-	public VanillaFit(int persons, int jobs, int weeks, int[] lastWeek) {
-		super(true);
-		// super(false, false, false, true); // This comes later. For multi objective selection
-		// The order is determined by the todo-list (in notes.txt)
-		
-		PERSONS = persons;
-		JOBS = jobs;
-		JOBS_NO_HALLWAY = JOBS - 2;
-		WEEKS = weeks;
-		SLOTS = JOBS_NO_HALLWAY * WEEKS // Normal tasks
-				+ WEEKS / 3 * 2; // Hallway tasks
-		LAST_WEEK = lastWeek;
-		
-		inWeek = new boolean[PERSONS]; // The array to store whether or not a person has a job that week
-	}
-	
 	@Override
 	public void evaluate(Individual<IntegerChromosome> ind) {
 		IntegerChromosome chrom = ind.getChromosome();
 		
-		boolean hasNoDoubles = hasNoDoublesPerWeek(chrom);
+//		boolean hasNoDoubles = hasNoDoublesPerWeek(chrom);
 		
-		if (hasNoDoubles) {
-			ind.setScore(1);
-		} else {
-			ind.setScore(0);
-		}
+//		if (hasNoDoubles) {
+//			ind.setScore(1);
+//		} else {
+//			ind.setScore(0);
+//		}
+		
+		int doubleCount = countWeeksWithDoubles(chrom);
+		
+		int uniqueJobPersonComboCount = countPerfectAssignment(chrom);
+		
+		ind.setScore((double) doubleCount, (double) uniqueJobPersonComboCount);
 		
 	}
 }

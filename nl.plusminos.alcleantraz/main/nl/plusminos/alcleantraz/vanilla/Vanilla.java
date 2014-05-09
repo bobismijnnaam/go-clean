@@ -29,6 +29,7 @@ public class Vanilla implements GenerationEventListener<IntegerChromosome> {
 	private final int GENERATION_LIMIT;
 	
 	private static GeneticAlgorithm<IntegerChromosome> ga;
+	private VanillaFit fitness;
 	
 	private String[] persons = null;
 	private String[] jobs = null;
@@ -76,7 +77,7 @@ public class Vanilla implements GenerationEventListener<IntegerChromosome> {
 		System.out.println("\nConstraints:");
 		System.out.println("Has no duplicates in every week: " + fitness.hasNoDoublesPerWeek(chrom) + " (" + fitness.countWeeksWithDoubles(chrom) + ")");
 //		System.out.println("Has no consequent identical jobs: " + fitness.hasNoOverlap(chrom) + " (" + fitness.countOverlaps(chrom) + ")");
-//		System.out.println("Everyone has each job at least once: " + fitness.hasPerfectAssignment(chrom) + " (" + fitness.countPerfectAssignment(chrom) + ")");
+		System.out.println("Everyone has each job at least once: " + fitness.hasPerfectAssignment(chrom) + " (" + fitness.countPerfectAssignment(chrom) + ")");
 //		System.out.println("Distribution (ideal = 0): " + fitness.gradeDistribution(chrom));
 		System.out.println("\nActual distribution of work: ");
 		
@@ -96,6 +97,18 @@ public class Vanilla implements GenerationEventListener<IntegerChromosome> {
 
 	@Override
 	public void onGeneration(GeneticAlgorithm<IntegerChromosome> thisGeneration, long arg1) {
+		int gen = thisGeneration.getGeneration();
+		if ((gen & 1023) == 0 && gen != 0) {
+			Population.Statistics<IntegerChromosome> stats = thisGeneration.getCurrentPopulation().getStatistics();
+			Group<IntegerChromosome> legals = stats.getGroup(Population.LEGALS);
+			
+			Individual<IntegerChromosome> elite = legals.get(0);
+			IntegerChromosome chrom = elite.getChromosome();
+			
+			System.out.print(" Unique job/person combos: " + fitness.countPerfectAssignment(chrom)
+					+ "; Weeks with doubles: " + fitness.countWeeksWithDoubles(chrom) + ";");
+		}
+		
 		nl.plusminos.alcleantraz.utils.Utils.reportGeneration(thisGeneration);
 	}
 
@@ -106,7 +119,7 @@ public class Vanilla implements GenerationEventListener<IntegerChromosome> {
 		Population<IntegerChromosome> pop = new Population<IntegerChromosome>(sample, POPULATION_SIZE);
 		
 		// Initialize fitness instance
-		VanillaFit fitness = new VanillaFit(SCHEDULE_PERSONS, SCHEDULE_JOBS_HALLWAY, SCHEDULE_WEEKS, null);
+		fitness = new VanillaFit(SCHEDULE_PERSONS, SCHEDULE_JOBS_HALLWAY, SCHEDULE_WEEKS, null);
 		
 		// Setup genetic algorithm
 		ga = new VanillaGA(fitness, pop, GENERATION_LIMIT);
@@ -172,8 +185,8 @@ public class Vanilla implements GenerationEventListener<IntegerChromosome> {
 	// args = "binky penny maarten ramon bob granny sam jeroen lizzy emile 15" 
 	public static void main(String[] args) {
 		int popSize = 1000;
-		int genLimit = 3000;
-		int weeks = 6;
+		int genLimit = 20000;
+		int weeks = 15;
 		
 		String[] jobs = new String[]{"Keuken", "Keuken", "Keuken", "Toilet", "Douche", "Gang", "Gang"};
 		

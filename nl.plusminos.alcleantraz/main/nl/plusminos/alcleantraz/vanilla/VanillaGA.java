@@ -25,9 +25,9 @@ public class VanillaGA extends GeneticAlgorithm<IntegerChromosome> {
 		
 		boolean noDoubles = FITNESS.hasNoDoublesPerWeek(chrom);
 //		boolean noOverlap = FITNESS.hasNoOverlap(chrom);
-//		boolean hasEachJobOnce = FITNESS.hasPerfectAssignment(chrom);
+		boolean hasEachJobOnce = FITNESS.hasPerfectAssignment(chrom);
 //		float distribution = FITNESS.gradeDistribution(chrom);
 		
-		return noDoubles; // && distribution <= 3.0;
+		return noDoubles && hasEachJobOnce; // && distribution <= 3.0;
 	}
 }

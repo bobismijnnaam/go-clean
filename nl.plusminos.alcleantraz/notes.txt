@@ -5,7 +5,7 @@ Constraints:
 	v Gang corvee is elke 3 weken (hard)
 	v De laatste week van die 3 weken die persoon gaan ander corvee hebben (hard)
 	- Rekening houden met laatste week van het oude rooster (hard)
-	- In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
+	v In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
 	
 	* Mensen kunnen kiezen welke corvee's ze niet willen doen als ze ninja's hebben (hard)
 
@@ -16,7 +16,12 @@ Ideeën:
 	v Gang includen in IntegerChromosome. Dit kan als je een offset meerekent bij het berekenen van de positie van taakjes in het chromosoom
 
 Todo:
-	- Per generatiereport (1024) informatie geven over de conditie van de populatie
+	- Zorgen dat als fitness kijkt naar of je vorige week (bijv.) al keuken hebt gedaan, hij naar
+	alledrie de kolommen kijkt en niet naar alleen die ene erboven
+	- Dus ook bij het tellen: het aantal unieke combos van taakjes en personen is dus niet JOBS * PERSONS,
+	maar gelijk aan DISTINCT(JOBS) * PERSONS!
+	- Dit komt vooral doordat gang niet elke week is. Iets op bedenken of hoort dit?
+	- Of bij langere roosters (want zo los je dat ruimteprobleem op) meer turbulentie (meer crossovers/mutaties)
 
 Voorbeeld:
 	Keuken	Keuken	Keuken	Gang	Gang	WC	Douche
