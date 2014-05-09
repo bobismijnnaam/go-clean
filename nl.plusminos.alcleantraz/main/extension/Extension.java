@@ -21,7 +21,7 @@ public class Extension implements GenerationEventListener<IntegerChromosome> {
 		JOB_SPACING = jobSpacing;
 		
 		if (schedule == null) { // Test run!
-			
+			BASE_SCHEDULE = null; // TODO
 		} else { // Actual run!
 			BASE_SCHEDULE = schedule;
 		}
