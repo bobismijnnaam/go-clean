@@ -4,7 +4,6 @@ import gnu.trove.set.hash.TByteHashSet;
 import jenes.chromosome.IntegerChromosome;
 
 // TODO: TByteHashSet pooling?
-// TODO: Caching! Of fitness
 public class Week {
 	private final TByteHashSet[] surjectiveCheck;
 	
@@ -56,6 +55,14 @@ public class Week {
 		}
 	}
 	
+	public int getAmountOfDoubles() {
+		if (hall == null) { // Check for hall week
+			return 5 - all.size();
+		} else {
+			return 7 - all.size();
+		}
+	}
+	
 	public boolean hasNoRecurringPersons(Week previousWeek) { // TODO: Make it so that no new TByteHashSets have to be made
 		if (previousWeek.wc == wc) {
 			return false;
@@ -76,5 +83,27 @@ public class Week {
 		}
 		
 		return true;
+	}
+	
+	public int getAmountOfRecurringPersons(Week previousWeek) {
+		int count = 0;
+		
+		if (previousWeek.wc == wc) {
+			count++;
+		}
+		
+		if (previousWeek.douche == douche) {
+			count++;
+		}
+		
+		TByteHashSet kitchenCopy = new TByteHashSet(kitchen);
+		kitchenCopy.retainAll(previousWeek.kitchen);
+		count += kitchenCopy.size();
+		
+		TByteHashSet hallCopy = new TByteHashSet(hall);
+		hallCopy.retainAll(previousWeek.hall);
+		count += hallCopy.size();
+		
+		return count;
 	}
 }
