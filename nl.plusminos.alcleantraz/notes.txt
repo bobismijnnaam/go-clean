@@ -3,7 +3,7 @@ Constraints:
 	v Elke persoon max. 1 x per week (hard)
 	- Als een persoon keukencorvee heeft mag hij de week ervoor/erna geen keukencorvee doen. (hard) (geld voor alle categorieën)
 	v Gang corvee is elke 3 weken (hard)
-	v De laatste week van die 3 weken die persoon gaan ander corvee hebben (hard)
+	v De laatste week van die 3 weken mag die persoon geen ander corvee hebben (hard)
 	- Rekening houden met laatste week van het oude rooster (hard)
 	v In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
 	
