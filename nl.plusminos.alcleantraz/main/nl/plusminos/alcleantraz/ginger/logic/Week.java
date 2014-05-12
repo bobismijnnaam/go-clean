@@ -1,7 +1,6 @@
 package nl.plusminos.alcleantraz.ginger.logic;
 
 import gnu.trove.set.hash.TByteHashSet;
-import jenes.chromosome.IntegerChromosome;
 
 // TODO: TByteHashSet pooling?
 public class Week {
@@ -23,31 +22,31 @@ public class Week {
 			hall = null;
 	}
 	
-	private void addToKitchen(byte p) {
+	public void addToKitchen(byte p) {
 		surjectiveCheck[Planning.TASK_KITCHEN].add(p);
 		all.add(p);
 		kitchen.add(p);
 	}
 	
-	private void addToHallway(byte p) {
+	public void addToHallway(byte p) {
 		surjectiveCheck[Planning.TASK_HALL].add(p);
 		all.add(p);
 		hall.add(p);
 	}
 	
-	private void addToWc(byte p) {
+	public void addToWc(byte p) {
 		surjectiveCheck[Planning.TASK_WC].add(p);
 		all.add(p);
 		wc = p;
 	}
 	
-	private void addToDouche(byte p) {
+	public void addToDouche(byte p) {
 		surjectiveCheck[Planning.TASK_DOUCHE].add(p);
 		all.add(p);
 		douche = p;
 	}
 	
-	public boolean hasNoPersonTwice() {
+	public boolean hasNoDoubles() {
 		if (hall == null) { // Check for hall week
 			return all.size() == 5;
 		} else {
@@ -74,15 +73,19 @@ public class Week {
 			if (kitchenCopy.size() > 0) {
 				return false;
 			}
-			
-			TByteHashSet hallCopy = new TByteHashSet(hall);
-			hallCopy.retainAll(previousWeek.hall);
-			if (hallCopy.size() > 0) {
-				return false;
-			}
 		}
 		
 		return true;
+	}
+	
+	public boolean hasNoRecurringPersons(Week previousWeek, Week previousHallWeek) {
+		boolean result = hasNoRecurringPersons(previousWeek);
+		
+		TByteHashSet hallCopy = new TByteHashSet(hall);
+		hallCopy.retainAll(previousHallWeek.hall);
+		result = result | hallCopy.size() == 0;
+		
+		return result;
 	}
 	
 	public int getAmountOfRecurringPersons(Week previousWeek) {
@@ -100,8 +103,14 @@ public class Week {
 		kitchenCopy.retainAll(previousWeek.kitchen);
 		count += kitchenCopy.size();
 		
+		return count;
+	}
+	
+	public int getAmountOfRecurringPersons(Week previousWeek, Week previousHallWeek) {
+		int count = getAmountOfRecurringPersons(previousWeek);
+		
 		TByteHashSet hallCopy = new TByteHashSet(hall);
-		hallCopy.retainAll(previousWeek.hall);
+		hallCopy.retainAll(previousHallWeek.hall);
 		count += hallCopy.size();
 		
 		return count;

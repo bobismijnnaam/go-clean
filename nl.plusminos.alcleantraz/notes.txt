@@ -1,11 +1,11 @@
 Constraints:
 	- Iedereen alles ongeveer evenveel (zo goed mogelijk; soft)
-	v Elke persoon max. 1 x per week (hard)
+	g Elke persoon max. 1 x per week (hard)
 	- Als een persoon keukencorvee heeft mag hij de week ervoor/erna geen keukencorvee doen. (hard) (geld voor alle categorieën)
-	v Gang corvee is elke 3 weken (hard)
-	v De laatste week van die 3 weken mag die persoon geen ander corvee hebben (hard)
+	- Gang corvee is elke 3 weken (hard)
+	- De laatste week van die 3 weken mag die persoon geen ander corvee hebben (hard)
 	- Rekening houden met laatste week van het oude rooster (hard)
-	v In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
+	g In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
 	
 	* Mensen kunnen kiezen welke corvee's ze niet willen doen als ze ninja's hebben (hard)
 
@@ -24,8 +24,8 @@ Todo:
 	- Of bij langere roosters (want zo los je dat ruimteprobleem op) meer turbulentie (meer crossovers/mutaties)
 
 Voorbeeld:
-	Keuken	Keuken	Keuken	Gang	Gang	WC	Douche
-	Sam		Ramon	Maarten	Penny	Lizzy	Bob	Binky
+	Keuken	Keuken	Keuken	WC		Douche	Gang	Gang
+	Sam		Ramon	Maarten	Penny	Lizzy	Bob		Binky
 
 Posities van taken in genoom per week:
 	Keuken = 0-1-2
