@@ -14,7 +14,7 @@ public class Planning {
 	public static final int JOBS_EXCLUDING = 5;
 	public static final int JOBS_THREEWEEKS = JOBS_EXCLUDING * 2 + JOBS_INCLUDING;
 	
-	private int threeWeeks;
+	private final int THREEWEEKS;
 	private int persons;
 	
 	private Week[] weeks;
@@ -22,8 +22,8 @@ public class Planning {
 	private TByteHashSet[] surjectiveCheck;
 	
 	public Planning(IntegerChromosome chrom, int persons) {
-		threeWeeks = chrom.length() / JOBS_THREEWEEKS;
-		weeks = new Week[threeWeeks * 3];
+		THREEWEEKS = chrom.length() / JOBS_THREEWEEKS;
+		weeks = new Week[THREEWEEKS * 3];
 		this.persons = persons;
 		
 		surjectiveCheck = new TByteHashSet[TASKS_TOTAL];
@@ -33,7 +33,7 @@ public class Planning {
 		
 		int weekNum;
 		int startPos;
-		for (int i = 0; i < threeWeeks; i++) {
+		for (int i = 0; i < THREEWEEKS; i++) {
 			for (int j = 0; j < 2; j++) {
 				weekNum = i * 3 + j;
 				weeks[weekNum] = new Week(surjectiveCheck, false);
@@ -118,27 +118,54 @@ public class Planning {
 	public boolean hasNoRecurringPersons() { // TODO: Can one do hallway twice in a row? Answer: NO
 		boolean result = false;
 		
-		int weekNum;
-		for (int i = 0; i < threeWeeks; i++) {
+		for (int i = 0; i < THREEWEEKS; i++) {
 			if (i > 0) {
-				result = result | weeks[i * JOBS_THREEWEEKS].hasNoRecurringPersons(weeks[i * JOBS_THREEWEEKS - 1]);
+				// First week
+				result = result | weeks[i * 3].hasNoRecurringPersons(weeks[i * 3 - 1]);
 				
-				result = result | weeks[i * JOBS_THREEWEEKS + 2].hasNoRecurringPersons(
-						weeks[i * JOBS_THREEWEEKS + 1], weeks[i * JOBS_THREEWEEKS - 1]);
+				// Third week including hallway
+				result = result | weeks[i * 3 + 2].hasNoRecurringPersons(
+						weeks[i * 3 + 1], weeks[i * 3 - 1]);
+				// Handle special case with last week of previous schedule?
+			} else {
+				// Third week, but not checking the hallway
+				result = result | weeks[i * 3 + 2].hasNoRecurringPersons(
+						weeks[i * 3 + 1]);
 			}
 			
-			result = result | weeks[i * JOBS_THREEWEEKS + 1].hasNoRecurringPersons(weeks[i * JOBS_THREEWEEKS]);
+			// Second week
+			result = result | weeks[i * 3 + 1].hasNoRecurringPersons(weeks[i * 3]);
 		}
 		
 		return result;
 	}
 	
+	/**
+	 * The lower the better!
+	 * @return Returns the amount of times a person was found that does the same job as last week
+	 */
 	public int getNoRecurringPersonsQuality() {
 		int result = 0;
 		
-		for (int i = 1; i < weeks.length(); i++) {
+		for (int i = 0; i < THREEWEEKS; i++) {
+			if (i > 0) {
+				// Count first week
+				result += weeks[i * JOBS_THREEWEEKS].getAmountOfRecurringPersons(weeks[i * JOBS_THREEWEEKS - 1]);
+				
+				// Third week including hallway
+				result += weeks[i * JOBS_THREEWEEKS + 2].getAmountOfRecurringPersons(weeks[i * JOBS_THREEWEEKS + 1],
+						weeks[i * JOBS_THREEWEEKS - 1]);
+			} else {
+				// Third week without hallway
+				result += weeks[i * JOBS_THREEWEEKS + 2].getAmountOfRecurringPersons(weeks[i * JOBS_THREEWEEKS + 1]);
+			}
+			
+			// Second week
+			result += weeks[i * JOBS_THREEWEEKS + 1].getAmountOfRecurringPersons(weeks[i * JOBS_THREEWEEKS]);
 			
 		}
+		
+		return result;
 	}
 	
 }
