@@ -49,6 +49,10 @@ public class Planning {
 			applyPlanning(chrom, weeks[weekNum], startPos);
 		}
 	}
+	
+	public void initializa(IntegerChromosome chrom) {
+		
+	}
 
 	private static void applyPlanning(IntegerChromosome chrom, Week week, int startPos) {
 		// Apply kitchen persons

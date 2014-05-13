@@ -4,22 +4,29 @@ import gnu.trove.set.hash.TByteHashSet;
 
 // TODO: TByteHashSet pooling?
 public class Week {
-	private final TByteHashSet[] surjectiveCheck;
+	private TByteHashSet[] surjectiveCheck;
 	
-	public final TByteHashSet all = new TByteHashSet(7);
+	public TByteHashSet all = new TByteHashSet(7);
 	
-	public final TByteHashSet kitchen = new TByteHashSet(3);
-	public final TByteHashSet hall;
+	public TByteHashSet kitchen = new TByteHashSet(3);
+	public TByteHashSet hall;
+	public boolean isHallWeek= false;
 	public byte wc = 0;
 	public byte douche = 0;
 	
-	public Week(TByteHashSet[] surjectiveCheck, boolean hallWeek) { // TODO
+	public Week() {
+		// Ignore
+	}
+	
+	public void initialize(TByteHashSet[] surjectiveCheck, boolean hallWeek) {
+		isHallWeek = hallWeek;
 		this.surjectiveCheck = surjectiveCheck;
 		
-		if (hallWeek)
-			hall = new TByteHashSet(2);
-		else
-			hall = null;
+		all.clear();
+		kitchen.clear();
+		hall.clear();
+		wc = 0;
+		douche = 0;
 	}
 	
 	public void addToKitchen(byte p) {

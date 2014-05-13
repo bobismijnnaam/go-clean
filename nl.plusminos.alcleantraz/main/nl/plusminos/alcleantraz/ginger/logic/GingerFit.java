@@ -11,9 +11,9 @@ public class GingerFit extends Fitness<IntegerChromosome> {
 		public int recurringQuality;
 		public int perfectAssignmentQuality;
 		
-		public boolean hasNoDoubles;
-		public boolean hasNoRecurring;
-		public boolean hasPerfectAssignment;	
+		public int hasNoDoubles;
+		public int hasNoRecurring;
+		public int hasPerfectAssignment;	
 	}
 	
 	public final int PERSONS;
@@ -36,29 +36,33 @@ public class GingerFit extends Fitness<IntegerChromosome> {
 	g In het hele rooster moet iedereen alles minstens 1 x gedaan hebben (hard).
 	 */
 	
-	@Override
-	public void evaluate(Individual<IntegerChromosome> individual) {
+	public PlanningQuality getQuality(Individual<IntegerChromosome> individual, boolean quantitative, boolean binary) {
+		PlanningQuality pq = new PlanningQuality();
 		Planning pl = new Planning(individual.getChromosome(), PERSONS);
-
-		int doubleQuality;
-		int recurringQuality;
-		int perfectAssignmentQuality;
 		
-		if (QUANTITATIVE) {
-			doubleQuality = pl.getDoublesQuality();
-			recurringQuality = pl.getNoRecurringPersonsQuality();
-			perfectAssignmentQuality = pl.getPerfectAssignmentQuality();
-		} else {
-			boolean hasNoDoubles = pl.hasNoWeeksWithDoubles();
-			boolean hasNoRecurring = pl.hasNoRecurringPersons();
-			boolean hasPerfectAssignment = pl.hasPerfectAssignment();
-			
-			doubleQuality = hasNoDoubles ? 0 : 1;
-			recurringQuality = hasNoRecurring ? 0 : 1;
-			perfectAssignmentQuality = hasPerfectAssignment ? 0 : 1;
+		if (quantitative) {
+			pq.doubleQuality = pl.getDoublesQuality();
+			pq.recurringQuality = pl.getNoRecurringPersonsQuality();
+			pq.perfectAssignmentQuality = pl.getPerfectAssignmentQuality();
+		}
+		if (binary) {
+			pq.hasNoDoubles = pl.hasNoWeeksWithDoubles() ? 0 : 1;
+			pq.hasNoRecurring = pl.hasNoRecurringPersons() ? 0 : 1;
+			pq.hasPerfectAssignment = pl.hasPerfectAssignment() ? 0 : 1;
 		}
 		
-		individual.setScore(doubleQuality, recurringQuality, perfectAssignmentQuality);
+		return pq;
+	}
+	
+	@Override
+	public void evaluate(Individual<IntegerChromosome> individual) {
+		PlanningQuality pq = getQuality(individual, QUANTITATIVE, !QUANTITATIVE);	
+		
+		if (QUANTITATIVE) {
+			individual.setScore(pq.doubleQuality, pq.recurringQuality, pq.perfectAssignmentQuality);
+		} else {
+			individual.setScore(pq.hasNoDoubles, pq.hasNoRecurring, pq.hasPerfectAssignment);
+		}
 	}
 	
 	public void printEvaluation(Individual<IntegerChromosome> individual) {
