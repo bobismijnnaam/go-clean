@@ -29,6 +29,7 @@ public class GingerGA extends GeneticAlgorithm<IntegerChromosome> {
 //		float distribution = FITNESS.gradeDistribution(chrom);
 		
 		
+		
 		return false;
 //		return noDoubles && hasEachJobOnce; // && distribution <= 3.0;
 	}

@@ -6,6 +6,16 @@ import jenes.population.Individual;
 
 public class GingerFit extends Fitness<IntegerChromosome> {
 	
+	public class PlanningQuality {
+		public int doubleQuality;
+		public int recurringQuality;
+		public int perfectAssignmentQuality;
+		
+		public boolean hasNoDoubles;
+		public boolean hasNoRecurring;
+		public boolean hasPerfectAssignment;	
+	}
+	
 	public final int PERSONS;
 	public final boolean QUANTITATIVE;
 	
@@ -49,6 +59,17 @@ public class GingerFit extends Fitness<IntegerChromosome> {
 		}
 		
 		individual.setScore(doubleQuality, recurringQuality, perfectAssignmentQuality);
+	}
+	
+	public void printEvaluation(Individual<IntegerChromosome> individual) {
+		Planning pl = new Planning(individual.getChromosome(), PERSONS);
+		
+		System.out.println("hasNoDoubles: " + pl.hasNoWeeksWithDoubles());
+		System.out.println("hasNoRecurring: " + pl.hasNoRecurringPersons());
+		System.out.println("hasPerfectAssignment: " + pl.hasPerfectAssignment());
+		System.out.println("doublesQuality: " + pl.getDoublesQuality());
+		System.out.println("recurringQuality: " + pl.getNoRecurringPersonsQuality());
+		System.out.println("perfectAssignmentQuality: " + pl.getPerfectAssignmentQuality());
 	}
 
 }

@@ -30,6 +30,8 @@ public class Scheduler implements Runnable, GenerationEventListener<IntegerChrom
 	
 	public IntegerChromosome result = null;
 	
+	private GingerFit fitness;
+	
 	public Scheduler(int persons, int triplets, int popSize, int genLimit, boolean quantitative, boolean console) {
 		PERSONS = persons;
 		TRIPLETS = triplets;
@@ -49,7 +51,7 @@ public class Scheduler implements Runnable, GenerationEventListener<IntegerChrom
 		Population<IntegerChromosome> pop = new Population<IntegerChromosome>(sample, POPSIZE);
 		
 		// Initialize fitness instance
-		Fitness<IntegerChromosome> fitness = new GingerFit(PERSONS, QUANTITATIVE);
+		fitness = new GingerFit(PERSONS, QUANTITATIVE);
 		
 		// Setup genetic algorithm
 		GingerGA ga = new GingerGA(fitness, pop, GENLIMIT);
@@ -90,9 +92,9 @@ public class Scheduler implements Runnable, GenerationEventListener<IntegerChrom
 		Group<IntegerChromosome> legals = stats.getGroup(Population.LEGALS);
 		
 		if (CONSOLE) {
-			System.out.println("\n\n[Results]\nSchedule:");
+			System.out.println("\n\n[Results]\n\nSchedule:");
 			
-//			printSchedule(legals.get(0), fitness);
+			printSchedule(legals.get(0), fitness);
 			System.out.println(legals.get(0).toCompleteString());
 			
 			System.out.println("<nonsense>\n\nStatistics:");
@@ -116,6 +118,33 @@ public class Scheduler implements Runnable, GenerationEventListener<IntegerChrom
 		result = legals.get(0).getChromosome();
 	}
 
+	private void printSchedule(Individual<IntegerChromosome> individual,
+			Fitness<IntegerChromosome> fitness) {
+		IntegerChromosome chrom = individual.getChromosome();
+		
+		for (int i = 0; i < TRIPLETS; i++) {
+			for (int j = 0; j < 2; j++) {
+				for (int k = 0; k < Planning.JOBS_EXCLUDING; k++) {
+					System.out.print(chrom.getValue(i * Planning.JOBS_THREEWEEKS + j * Planning.JOBS_EXCLUDING + k));
+					System.out.print("\t");
+				}
+				System.out.println();
+			}
+			
+			for (int k = 0; k < Planning.JOBS_INCLUDING; k++) {
+				System.out.print(chrom.getValue(i * Planning.JOBS_THREEWEEKS + 2 * Planning.JOBS_EXCLUDING + k));
+				System.out.print("\t");
+			}
+			System.out.println();
+		}
+		System.out.println();
+		
+		((GingerFit) fitness).printEvaluation(individual);
+		
+		System.out.println();
+		
+	}
+
 	public void onGeneration(GeneticAlgorithm<IntegerChromosome> thisGA, long timestamp) {
 		currentGeneration = thisGA.getGeneration();
 		if ((currentGeneration & 1023) == 0 && currentGeneration != 0 && CONSOLE) {
@@ -124,6 +153,8 @@ public class Scheduler implements Runnable, GenerationEventListener<IntegerChrom
 			
 			Individual<IntegerChromosome> elite = legals.get(0);
 			IntegerChromosome chrom = elite.getChromosome();
+			
+			fitness.printEvaluation(elite);
 			
 			// TODO
 //			System.out.print(" Unique job/person combos: " + fitness.countPerfectAssignment(chrom)
@@ -134,7 +165,7 @@ public class Scheduler implements Runnable, GenerationEventListener<IntegerChrom
 	}
 	
 	public static void main(String[] args) {
-		Scheduler s = new Scheduler(5, 3, 1000, 10000, false, true);
+		Scheduler s = new Scheduler(11, 5, 1000, 20000, false, true);
 		Thread t = new Thread(s);
 		t.run();
 	}

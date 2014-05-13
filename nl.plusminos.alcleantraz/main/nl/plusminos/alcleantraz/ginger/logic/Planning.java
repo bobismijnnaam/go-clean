@@ -150,18 +150,18 @@ public class Planning {
 		for (int i = 0; i < THREEWEEKS; i++) {
 			if (i > 0) {
 				// Count first week
-				result += weeks[i * JOBS_THREEWEEKS].getAmountOfRecurringPersons(weeks[i * JOBS_THREEWEEKS - 1]);
+				result += weeks[i * 3].getAmountOfRecurringPersons(weeks[i * 3 - 1]);
 				
 				// Third week including hallway
-				result += weeks[i * JOBS_THREEWEEKS + 2].getAmountOfRecurringPersons(weeks[i * JOBS_THREEWEEKS + 1],
-						weeks[i * JOBS_THREEWEEKS - 1]);
+				result += weeks[i * 3 + 2].getAmountOfRecurringPersons(weeks[i * 3 + 1],
+						weeks[i * 3 - 1]);
 			} else {
 				// Third week without hallway
-				result += weeks[i * JOBS_THREEWEEKS + 2].getAmountOfRecurringPersons(weeks[i * JOBS_THREEWEEKS + 1]);
+				result += weeks[i * 3 + 2].getAmountOfRecurringPersons(weeks[i * 3 + 1]);
 			}
 			
 			// Second week
-			result += weeks[i * JOBS_THREEWEEKS + 1].getAmountOfRecurringPersons(weeks[i * JOBS_THREEWEEKS]);
+			result += weeks[i * 3 + 1].getAmountOfRecurringPersons(weeks[i * 3]);
 			
 		}
 		
