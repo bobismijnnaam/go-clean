@@ -1,26 +1,26 @@
 package nl.plusminos.alcleantraz.ginger.logic;
 
-import gnu.trove.set.hash.TByteHashSet;
+import java.util.ArrayList;
+import java.util.HashSet;
 
-// TODO: TByteHashSet pooling?
 public class Week {
-	private TByteHashSet[] surjectiveCheck;
+	private ArrayList<HashSet<Byte>> surjectiveCheck;
 	
-	public TByteHashSet all = new TByteHashSet(7);
+	public HashSet<Byte> all = new HashSet<Byte>(7);
 	
-	public TByteHashSet kitchen = new TByteHashSet(3);
-	public TByteHashSet hall;
-	public TByteHashSet tempHashSet = new TByteHashSet(3);
+	public HashSet<Byte> kitchen = new HashSet<Byte>(3);
+	public HashSet<Byte> hall;
+	public HashSet<Byte> tempHashSet = new HashSet<Byte>(3);
 	private boolean isHallWeek = false;
 	public byte wc = 0;
 	public byte douche = 0;
 	
 	
-	public Week(TByteHashSet[] surjectiveCheck, boolean hallWeek) {
+	public Week(ArrayList<HashSet<Byte>> surjectiveCheck, boolean hallWeek) {
 		isHallWeek = hallWeek;
 		
 		if (hallWeek) {
-			hall = new TByteHashSet(2);
+			hall = new HashSet<Byte>(2);
 		}
 		
 		this.surjectiveCheck = surjectiveCheck;
@@ -35,25 +35,25 @@ public class Week {
 	}
 	
 	public void addToKitchen(byte p) {
-		surjectiveCheck[Planning.TASK_KITCHEN].add(p);
+		surjectiveCheck.get(Planning.TASK_KITCHEN).add(p);
 		all.add(p);
 		kitchen.add(p);
 	}
 	
 	public void addToHallway(byte p) {
-		surjectiveCheck[Planning.TASK_HALL].add(p);
+		surjectiveCheck.get(Planning.TASK_HALL).add(p);
 		all.add(p);
 		hall.add(p);
 	}
 	
 	public void addToWc(byte p) {
-		surjectiveCheck[Planning.TASK_WC].add(p);
+		surjectiveCheck.get(Planning.TASK_WC).add(p);
 		all.add(p);
 		wc = p;
 	}
 	
 	public void addToDouche(byte p) {
-		surjectiveCheck[Planning.TASK_DOUCHE].add(p);
+		surjectiveCheck.get(Planning.TASK_DOUCHE).add(p);
 		all.add(p);
 		douche = p;
 	}
@@ -84,7 +84,7 @@ public class Week {
 		} else if (previousWeek.douche == douche) {
 			return false;
 		} else {
-			TByteHashSet kitchenCopy = new TByteHashSet(kitchen);
+			HashSet<Byte> kitchenCopy = new HashSet<Byte>(kitchen);
 			kitchenCopy.retainAll(previousWeek.kitchen);
 			if (kitchenCopy.size() > 0) {
 				return false;
@@ -97,7 +97,7 @@ public class Week {
 	public boolean hasNoRecurringPersons(Week previousWeek, Week previousHallWeek) {
 		boolean result = hasNoRecurringPersons(previousWeek);
 		
-		TByteHashSet hallCopy = new TByteHashSet(hall);
+		HashSet<Byte> hallCopy = new HashSet<Byte>(hall);
 		hallCopy.retainAll(previousHallWeek.hall);
 		result = result | hallCopy.size() == 0;
 		

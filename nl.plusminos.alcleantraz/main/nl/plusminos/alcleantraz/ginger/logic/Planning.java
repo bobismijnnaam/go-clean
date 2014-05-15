@@ -1,6 +1,10 @@
 package nl.plusminos.alcleantraz.ginger.logic;
 
 import gnu.trove.set.hash.TByteHashSet;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import jenes.chromosome.IntegerChromosome;
 
 public class Planning {
@@ -19,15 +23,15 @@ public class Planning {
 	
 	private Week[] weeks;
 	
-	private TByteHashSet[] surjectiveCheck;
+	private ArrayList<HashSet<Byte>> surjectiveCheck;
 	
 	public Planning(int threeWeeks, int persons) {
 		THREEWEEKS = threeWeeks;
 		this.persons = persons;
 		
-		surjectiveCheck = new TByteHashSet[TASKS_TOTAL];
+		surjectiveCheck = new ArrayList<HashSet<Byte>>(TASKS_TOTAL);
 		for (int i = 0; i < TASKS_TOTAL; i++) {
-			surjectiveCheck[i] = new TByteHashSet(persons);
+			surjectiveCheck.add(new HashSet<Byte>(persons));
 		}
 		
 		weeks = new Week[THREEWEEKS * 3];
@@ -46,7 +50,7 @@ public class Planning {
 	}
 	
 	public void initialize(IntegerChromosome chrom) {
-		for (TByteHashSet job : surjectiveCheck) {
+		for (HashSet<Byte> job : surjectiveCheck) {
 			job.clear();
 		}
 		
@@ -89,7 +93,7 @@ public class Planning {
 		boolean result = true;
 		
 		for (int i = 0; i < TASKS_TOTAL; i++) {
-			result = result && (surjectiveCheck[i].size() == persons);
+			result = result && (surjectiveCheck.get(i).size() == persons);
 		}
 		
 		return result;
@@ -100,8 +104,8 @@ public class Planning {
 		
 		System.out.print("[");
 		for (int i = 0; i < TASKS_TOTAL; i++) {
-			result = result && (surjectiveCheck[i].size() == persons);
-			System.out.print(surjectiveCheck[i].size() + "|");
+			result = result && (surjectiveCheck.get(i).size() == persons);
+			System.out.print(surjectiveCheck.get(i).size() + "|");
 		}
 		System.out.println();
 		
@@ -116,7 +120,7 @@ public class Planning {
 		int result = 0;
 		
 		for (int i = 0; i < TASKS_TOTAL; i++) {
-			result += persons - surjectiveCheck[i].size();
+			result += persons - surjectiveCheck.get(i).size();
 		}
 		
 		return result;

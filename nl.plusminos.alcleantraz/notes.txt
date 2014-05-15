@@ -1,3 +1,5 @@
+TODO: Reimplement Ginger with Trove arraylists and addQuick/resetQuick etc!
+
 Constraints:
 	- Iedereen alles ongeveer evenveel (zo goed mogelijk; soft)
 	g Elke persoon max. 1 x per week (hard)
