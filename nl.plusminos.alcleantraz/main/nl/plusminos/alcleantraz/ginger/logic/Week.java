@@ -10,21 +10,26 @@ public class Week {
 	
 	public TByteHashSet kitchen = new TByteHashSet(3);
 	public TByteHashSet hall;
-	public boolean isHallWeek= false;
+	public TByteHashSet tempHashSet = new TByteHashSet(3);
+	private boolean isHallWeek = false;
 	public byte wc = 0;
 	public byte douche = 0;
 	
-	public Week() {
-		// Ignore
+	
+	public Week(TByteHashSet[] surjectiveCheck, boolean hallWeek) {
+		isHallWeek = hallWeek;
+		
+		if (hallWeek) {
+			hall = new TByteHashSet(2);
+		}
+		
+		this.surjectiveCheck = surjectiveCheck;
 	}
 	
-	public void initialize(TByteHashSet[] surjectiveCheck, boolean hallWeek) {
-		isHallWeek = hallWeek;
-		this.surjectiveCheck = surjectiveCheck;
-		
+	public void initialize() {
 		all.clear();
 		kitchen.clear();
-		hall.clear();
+		if (hall != null) hall.clear();;
 		wc = 0;
 		douche = 0;
 	}
@@ -51,6 +56,10 @@ public class Week {
 		surjectiveCheck[Planning.TASK_DOUCHE].add(p);
 		all.add(p);
 		douche = p;
+	}
+	
+	public boolean isHallWeek() {
+		return isHallWeek;
 	}
 	
 	public boolean hasNoDoubles() {
@@ -106,9 +115,10 @@ public class Week {
 			count++;
 		}
 		
-		TByteHashSet kitchenCopy = new TByteHashSet(kitchen);
-		kitchenCopy.retainAll(previousWeek.kitchen);
-		count += kitchenCopy.size();
+		tempHashSet.clear();
+		tempHashSet.addAll(kitchen);
+		tempHashSet.retainAll(previousWeek.kitchen);
+		count += tempHashSet.size();
 		
 		return count;
 	}
@@ -116,9 +126,10 @@ public class Week {
 	public int getAmountOfRecurringPersons(Week previousWeek, Week previousHallWeek) {
 		int count = getAmountOfRecurringPersons(previousWeek);
 		
-		TByteHashSet hallCopy = new TByteHashSet(hall);
-		hallCopy.retainAll(previousHallWeek.hall);
-		count += hallCopy.size();
+		tempHashSet.clear();
+		tempHashSet.addAll(hall);
+		tempHashSet.retainAll(previousHallWeek.hall);
+		count += tempHashSet.size();
 		
 		return count;
 	}

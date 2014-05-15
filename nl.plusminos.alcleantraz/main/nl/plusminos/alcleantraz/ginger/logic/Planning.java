@@ -21,9 +21,8 @@ public class Planning {
 	
 	private TByteHashSet[] surjectiveCheck;
 	
-	public Planning(IntegerChromosome chrom, int persons) {
-		THREEWEEKS = chrom.length() / JOBS_THREEWEEKS;
-		weeks = new Week[THREEWEEKS * 3];
+	public Planning(int threeWeeks, int persons) {
+		THREEWEEKS = threeWeeks;
 		this.persons = persons;
 		
 		surjectiveCheck = new TByteHashSet[TASKS_TOTAL];
@@ -31,27 +30,42 @@ public class Planning {
 			surjectiveCheck[i] = new TByteHashSet(persons);
 		}
 		
+		weeks = new Week[THREEWEEKS * 3];
+		
 		int weekNum;
 		int startPos;
 		for (int i = 0; i < THREEWEEKS; i++) {
 			for (int j = 0; j < 2; j++) {
 				weekNum = i * 3 + j;
 				weeks[weekNum] = new Week(surjectiveCheck, false);
-				
-				startPos = i * JOBS_THREEWEEKS + j * JOBS_EXCLUDING;
-				
-				applyPlanning(chrom, weeks[weekNum], startPos);
 			}
 			
 			weekNum = i * 3 + 2;
 			weeks[weekNum] = new Week(surjectiveCheck, true);
-			startPos = i * JOBS_THREEWEEKS + 2 * JOBS_EXCLUDING;
-			applyPlanning(chrom, weeks[weekNum], startPos);
 		}
 	}
 	
-	public void initializa(IntegerChromosome chrom) {
+	public void initialize(IntegerChromosome chrom) {
+		for (TByteHashSet job : surjectiveCheck) {
+			job.clear();
+		}
 		
+		int weekNum;
+		int startPos;
+		for (int i = 0; i < THREEWEEKS; i++) {
+			for (int j = 0; j < 2; j++) {
+				weekNum = i * 3 + j;
+				weeks[weekNum].initialize();
+				
+				startPos = i * JOBS_THREEWEEKS + j * JOBS_EXCLUDING;
+				applyPlanning(chrom, weeks[weekNum], startPos);
+			}
+			
+			weekNum = i * 3 + 2;
+			weeks[weekNum].initialize();;
+			startPos = i * JOBS_THREEWEEKS + 2 * JOBS_EXCLUDING;
+			applyPlanning(chrom, weeks[weekNum], startPos);
+		}
 	}
 
 	private static void applyPlanning(IntegerChromosome chrom, Week week, int startPos) {
@@ -64,19 +78,32 @@ public class Planning {
 		week.addToWc((byte) chrom.getValue(startPos + 3));
 		week.addToDouche((byte) chrom.getValue(startPos + 4));
 		
-		// (Maybe) APply hallway
-		if (week.hall != null) {
+		// (Maybe) Apply hallway
+		if (week.isHallWeek()) {
 			week.addToHallway((byte) chrom.getValue(startPos + 5));
 			week.addToHallway((byte) chrom.getValue(startPos + 6));
 		}
 	}
 	
 	public boolean hasPerfectAssignment() {
-		boolean result = false;
+		boolean result = true;
 		
 		for (int i = 0; i < TASKS_TOTAL; i++) {
-			result = result | (surjectiveCheck[i].size() == persons);
+			result = result && (surjectiveCheck[i].size() == persons);
 		}
+		
+		return result;
+	}
+	
+	public boolean hasPerfectAssignment(int p) {
+		boolean result = true;
+		
+		System.out.print("[");
+		for (int i = 0; i < TASKS_TOTAL; i++) {
+			result = result && (surjectiveCheck[i].size() == persons);
+			System.out.print(surjectiveCheck[i].size() + "|");
+		}
+		System.out.println();
 		
 		return result;
 	}
@@ -96,10 +123,10 @@ public class Planning {
 	}
 	
 	public boolean hasNoWeeksWithDoubles() {
-		boolean result = false;
+		boolean result = true;
 		
 		for (int i = 0; i < weeks.length; i++) {
-			result = result | weeks[i].hasNoDoubles();
+			result = result && weeks[i].hasNoDoubles();
 		}
 		
 		return result;
@@ -120,25 +147,25 @@ public class Planning {
 	}
 	
 	public boolean hasNoRecurringPersons() { // TODO: Can one do hallway twice in a row? Answer: NO
-		boolean result = false;
+		boolean result = true;
 		
 		for (int i = 0; i < THREEWEEKS; i++) {
 			if (i > 0) {
 				// First week
-				result = result | weeks[i * 3].hasNoRecurringPersons(weeks[i * 3 - 1]);
+				result = result && weeks[i * 3].hasNoRecurringPersons(weeks[i * 3 - 1]);
 				
 				// Third week including hallway
-				result = result | weeks[i * 3 + 2].hasNoRecurringPersons(
+				result = result && weeks[i * 3 + 2].hasNoRecurringPersons(
 						weeks[i * 3 + 1], weeks[i * 3 - 1]);
 				// Handle special case with last week of previous schedule?
 			} else {
 				// Third week, but not checking the hallway
-				result = result | weeks[i * 3 + 2].hasNoRecurringPersons(
+				result = result && weeks[i * 3 + 2].hasNoRecurringPersons(
 						weeks[i * 3 + 1]);
 			}
 			
 			// Second week
-			result = result | weeks[i * 3 + 1].hasNoRecurringPersons(weeks[i * 3]);
+			result = result && weeks[i * 3 + 1].hasNoRecurringPersons(weeks[i * 3]);
 		}
 		
 		return result;
