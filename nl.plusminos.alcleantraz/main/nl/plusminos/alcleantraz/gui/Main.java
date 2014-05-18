@@ -1,4 +1,4 @@
-package nl.plusminos.alcleantraz.ginger.panels;
+package nl.plusminos.alcleantraz.gui;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;

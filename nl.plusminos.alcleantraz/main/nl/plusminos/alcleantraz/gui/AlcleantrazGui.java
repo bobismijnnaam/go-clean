@@ -1,14 +1,14 @@
-package nl.plusminos.alcleantraz.ginger;
+package nl.plusminos.alcleantraz.gui;
 
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 
-import nl.plusminos.alcleantraz.ginger.panels.Main;
-import nl.plusminos.alcleantraz.ginger.panels.Schedule;
-import nl.plusminos.alcleantraz.ginger.panels.Search;
+import nl.plusminos.alcleantraz.gui.Main;
+import nl.plusminos.alcleantraz.gui.Schedule;
+import nl.plusminos.alcleantraz.gui.Search;
 
-public class Ginger {
+public class AlcleantrazGui {
 	// Mainframe
 	public final JFrame screen;
 	
@@ -17,7 +17,7 @@ public class Ginger {
 	public final Search searchPanel = new Search();
 	public final Schedule schedulePanel = new Schedule();
 	
-	public Ginger() {
+	public AlcleantrazGui() {
 //		try {
 //			UIManager.setLookAndFeel(
 //			        UIManager.getSystemLookAndFeelClassName());
@@ -36,6 +36,6 @@ public class Ginger {
 	}
 	
 	public static void main(String[] args) {
-		new Ginger();
+		new AlcleantrazGui();
 	}
 }
