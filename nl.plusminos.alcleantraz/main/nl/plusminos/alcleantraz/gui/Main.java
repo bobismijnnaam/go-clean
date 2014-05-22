@@ -27,7 +27,7 @@ public class Main {
 	
 	public Main() {
 		// Initialize panels & sub panels
-		panel = new JPanel(new MigLayout("wrap 2, fill", // debug
+		panel = new JPanel(new MigLayout("wrap 2, fill, debug", // 
 				"[60%][40%]",
 				"[20%, top][20%][20%][20%]"));
 		menuPanel = new JPanel(new MigLayout("wrap 1",

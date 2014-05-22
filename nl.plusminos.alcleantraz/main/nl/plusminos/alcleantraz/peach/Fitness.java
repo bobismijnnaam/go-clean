@@ -1,5 +1,6 @@
 package nl.plusminos.alcleantraz.peach;
 
+import nl.plusminos.alcleantraz.utils.ShortHammingWeight;
 import gnu.trove.list.array.TShortArrayList;
 
 // TODO: The only thing each function does is loop through all the weeks. It IS possible to merge them together!
@@ -141,11 +142,10 @@ public class Fitness {
 	
 	/**
 	 * The lower the better!
-	 * @return
+	 * @return The amount of person/job pairs that where unused
 	 */
 	public int getPerfectAssignmentQuality() {
 		short kitchen = 0, toilet = 0, bathroom = 0, hallway = 0;
-		int quality = 0;
 		int weekStart = 0;
 		
 		for (int tw = 1; tw < THREEWEEKS; tw++) {
@@ -159,8 +159,7 @@ public class Fitness {
 			}
 		}
 		
-		// TODO: How find how many zeroes there are in a bitstring?
-		// Maybe bitshift left and check the right bit each time for 1 and 0?
+		int quality = 4 * 11 - (ShortHammingWeight.ones[kitchen] + ShortHammingWeight.ones[toilet] + ShortHammingWeight.ones[bathroom] + ShortHammingWeight.ones[hallway]);
 		
 		return quality;
 	}
