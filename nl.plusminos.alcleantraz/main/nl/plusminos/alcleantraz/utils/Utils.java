@@ -17,4 +17,20 @@ public class Utils {
 			System.out.print("|");
 		}
 	}
+	
+	public static void resetBooleanArray(boolean[] array) {
+		for (int i = 0; i < array.length; i++) {
+			array[i] = false;
+		}
+	}
+	
+	public static int countTrue(boolean[] array) {
+		int result = 0;
+		
+		for (boolean b : array) {
+			if (b) result++;
+		}
+		
+		return result;
+	}
 }

@@ -7,9 +7,6 @@ import gnu.trove.list.array.TShortArrayList;
 public class Fitness {
 	public final int PERSONS;
 	public final int THREEWEEKS;
-	public final int JOBS_EXCLUDING = 5;
-	public final int JOBS_INCLUDING = 7;
-	public final int JOBS_THREEWEEKS = JOBS_EXCLUDING * 2 + JOBS_INCLUDING;
 	
 	private short[] chrom;
 	private TShortArrayList personArray;
@@ -40,7 +37,7 @@ public class Fitness {
 		
 		// For the first three weeks
 		for (int w = 0; w < 3; w++) {
-			weekStart = 0 * JOBS_THREEWEEKS + w * JOBS_EXCLUDING;
+			weekStart = 0 * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING;
 			
 			previousKitchen = kitchen;
 			kitchen = (short) (chrom[weekStart] | chrom[weekStart + 1] | chrom[weekStart + 2]);
@@ -66,7 +63,7 @@ public class Fitness {
 		
 		for (int tw = 1; tw < THREEWEEKS; tw++) {
 			for (int w = 0; w < 3; w++) {
-				weekStart = tw * JOBS_THREEWEEKS + w * JOBS_EXCLUDING;
+				weekStart = tw * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING;
 				
 				previousKitchen = kitchen;
 				kitchen = (short) (chrom[weekStart] | chrom[weekStart + 1] | chrom[weekStart + 2]);
@@ -111,12 +108,12 @@ public class Fitness {
 		
 		for (int tw = 1; tw < THREEWEEKS; tw++) {
 			for (int w = 0; w < 3; w++) {
-				weekStart = tw * JOBS_THREEWEEKS + w * JOBS_EXCLUDING;
+				weekStart = tw * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING;
 				personArray.resetQuick();
 				personArray.add(chrom[weekStart]);
 				
 				// Regular check
-				for (int j = 1; j < JOBS_EXCLUDING; j++) {
+				for (int j = 1; j < Info.JOBS_EXCLUDING; j++) {
 					if (personArray.contains(chrom[weekStart + j])) {
 						quality++;
 						break;
@@ -150,7 +147,7 @@ public class Fitness {
 		
 		for (int tw = 1; tw < THREEWEEKS; tw++) {
 			for (int w = 0; w < 3; w++) {
-				weekStart = tw * JOBS_THREEWEEKS + w * JOBS_EXCLUDING;
+				weekStart = tw * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING;
 				
 				kitchen |= chrom[weekStart] | chrom[weekStart + 1] | chrom[weekStart + 2];
 				toilet |= chrom[weekStart + 3];
@@ -162,6 +159,16 @@ public class Fitness {
 		int quality = 4 * 11 - (ShortHammingWeight.ones[kitchen] + ShortHammingWeight.ones[toilet] + ShortHammingWeight.ones[bathroom] + ShortHammingWeight.ones[hallway]);
 		
 		return quality;
+	}
+	
+	public void evaluate(Individual individual) {
+		setChromosome(individual.getChromosome());
+		
+		int sum = getPerfectAssignmentQuality();
+		sum += getInjectionQuality();
+		sum += getRecurrenceQuality();
+		
+		individual.setFitness(sum);
 	}
 	
 	public static void main(String[] args) {

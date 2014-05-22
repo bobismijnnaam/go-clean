@@ -1,11 +1,7 @@
 package nl.plusminos.alcleantraz.ginger.logic;
 
-import gnu.trove.set.hash.TByteHashSet;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import jenes.chromosome.IntegerChromosome;
+import nl.plusminos.alcleantraz.utils.Utils;
 
 public class Planning {
 	public static final byte TASK_KITCHEN = 0;
@@ -23,35 +19,33 @@ public class Planning {
 	
 	private Week[] weeks;
 	
-	private ArrayList<HashSet<Byte>> surjectiveCheck;
+	private boolean[][] surjectiveCheck = new boolean[TASKS_TOTAL][];
 	
 	public Planning(int threeWeeks, int persons) {
 		THREEWEEKS = threeWeeks;
 		this.persons = persons;
 		
-		surjectiveCheck = new ArrayList<HashSet<Byte>>(TASKS_TOTAL);
 		for (int i = 0; i < TASKS_TOTAL; i++) {
-			surjectiveCheck.add(new HashSet<Byte>(persons));
+			surjectiveCheck[i] = new boolean[persons];
 		}
 		
 		weeks = new Week[THREEWEEKS * 3];
 		
 		int weekNum;
-		int startPos;
 		for (int i = 0; i < THREEWEEKS; i++) {
 			for (int j = 0; j < 2; j++) {
 				weekNum = i * 3 + j;
-				weeks[weekNum] = new Week(surjectiveCheck, false);
+				weeks[weekNum] = new Week(surjectiveCheck, false, persons);
 			}
 			
 			weekNum = i * 3 + 2;
-			weeks[weekNum] = new Week(surjectiveCheck, true);
+			weeks[weekNum] = new Week(surjectiveCheck, true, persons);
 		}
 	}
 	
 	public void initialize(IntegerChromosome chrom) {
-		for (HashSet<Byte> job : surjectiveCheck) {
-			job.clear();
+		for (boolean[] job : surjectiveCheck) {
+			Utils.resetBooleanArray(job);
 		}
 		
 		int weekNum;
@@ -66,7 +60,7 @@ public class Planning {
 			}
 			
 			weekNum = i * 3 + 2;
-			weeks[weekNum].initialize();;
+			weeks[weekNum].initialize();
 			startPos = i * JOBS_THREEWEEKS + 2 * JOBS_EXCLUDING;
 			applyPlanning(chrom, weeks[weekNum], startPos);
 		}
@@ -93,7 +87,7 @@ public class Planning {
 		boolean result = true;
 		
 		for (int i = 0; i < TASKS_TOTAL; i++) {
-			result = result && (surjectiveCheck.get(i).size() == persons);
+			result = result && (Utils.countTrue(surjectiveCheck[i]) == persons);
 		}
 		
 		return result;
@@ -104,8 +98,8 @@ public class Planning {
 		
 		System.out.print("[");
 		for (int i = 0; i < TASKS_TOTAL; i++) {
-			result = result && (surjectiveCheck.get(i).size() == persons);
-			System.out.print(surjectiveCheck.get(i).size() + "|");
+			result = result && (Utils.countTrue(surjectiveCheck[i]) == persons);
+			System.out.print(Utils.countTrue(surjectiveCheck[i]) + "|");
 		}
 		System.out.println();
 		
@@ -120,7 +114,7 @@ public class Planning {
 		int result = 0;
 		
 		for (int i = 0; i < TASKS_TOTAL; i++) {
-			result += persons - surjectiveCheck.get(i).size();
+			result += persons - Utils.countTrue(surjectiveCheck[i]);
 		}
 		
 		return result;
@@ -185,18 +179,18 @@ public class Planning {
 		for (int i = 0; i < THREEWEEKS; i++) {
 			if (i > 0) {
 				// Count first week
-				result += weeks[i * 3].getAmountOfRecurringPersons(weeks[i * 3 - 1]);
+				result += weeks[i * 3].hasNoRecurringPersons(weeks[i * 3 - 1]) ? 0 : 1;
 				
 				// Third week including hallway
-				result += weeks[i * 3 + 2].getAmountOfRecurringPersons(weeks[i * 3 + 1],
-						weeks[i * 3 - 1]);
+				result += weeks[i * 3 + 2].hasNoRecurringPersons(weeks[i * 3 + 1],
+						weeks[i * 3 - 1]) ? 0 : 1;
 			} else {
 				// Third week without hallway
-				result += weeks[i * 3 + 2].getAmountOfRecurringPersons(weeks[i * 3 + 1]);
+				result += weeks[i * 3 + 2].hasNoRecurringPersons(weeks[i * 3 + 1]) ? 0 : 1;
 			}
 			
 			// Second week
-			result += weeks[i * 3 + 1].getAmountOfRecurringPersons(weeks[i * 3]);
+			result += weeks[i * 3 + 1].hasNoRecurringPersons(weeks[i * 3]) ? 0 : 1;
 			
 		}
 		

@@ -169,7 +169,7 @@ public class Scheduler implements Runnable, GenerationEventListener<IntegerChrom
 	}
 	
 	public static void main(String[] args) {
-		Scheduler s = new Scheduler(2, 1, 2000, 10000, false, true);
+		Scheduler s = new Scheduler(11, 5, 2000, 20000, true, true);
 		Thread t = new Thread(s);
 		t.run();
 	}
