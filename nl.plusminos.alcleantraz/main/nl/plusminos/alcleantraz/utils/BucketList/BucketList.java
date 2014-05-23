@@ -2,6 +2,12 @@ package nl.plusminos.alcleantraz.utils.BucketList;
 
 import java.lang.reflect.Array;
 
+/**
+ * Kind of a pointless class actually :')
+ * @author Bob
+ *
+ * @param <T>
+ */
 public class BucketList<T> {
 	private Bucket<T>[] buckets;
 	private int totalCapacity;

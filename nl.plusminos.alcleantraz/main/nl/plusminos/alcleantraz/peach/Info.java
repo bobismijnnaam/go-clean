@@ -6,9 +6,15 @@ import nl.plusminos.alcleantraz.utils.HighQualityRandom;
 
 public class Info {
 	public static final Random rand = new HighQualityRandom();
+	
 	public static final int JOBS_EXCLUDING = 5;
 	public static final int JOBS_INCLUDING = 7;
 	public static final int JOBS_THREEWEEKS = JOBS_EXCLUDING * 2 + JOBS_INCLUDING;
+	
+	public static final int JOB_KITCHEN = 0;
+	public static final int JOB_TOILET = 1;
+	public static final int JOB_SHOWER = 2;
+	public static final int JOB_HALLWAY = 3;
 	
 	private static int PERSONS = -1;
 	private static int THREEWEEKS = -1;
@@ -32,6 +38,11 @@ public class Info {
 		}
 	}
 	
+	public static void setup(int persons, int threeWeeks) {
+		setPersons(persons);
+		setThreeWeeks(threeWeeks);
+	}
+	
 	public static int getThreeWeeks() {
 		return THREEWEEKS;
 	}
@@ -45,7 +56,11 @@ public class Info {
 	}
 	
 	public static short nextPerson() {
-		return (short) nextInt(PERSONS);
+		return (short) Math.pow(2, nextInt(PERSONS));
+	}
+	
+	public static String getName(short id) {
+		return "" + ((char) (65 + Math.log(id) / Math.log(2)));
 	}
 	
 }

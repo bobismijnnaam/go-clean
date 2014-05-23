@@ -1,21 +1,18 @@
 package nl.plusminos.alcleantraz.peach;
 
-import nl.plusminos.alcleantraz.utils.ShortHammingWeight;
 import gnu.trove.list.array.TShortArrayList;
+
+import java.util.ArrayList;
+
+import nl.plusminos.alcleantraz.utils.ShortHammingWeight;
 
 // TODO: The only thing each function does is loop through all the weeks. It IS possible to merge them together!
 public class Fitness {
-	public final int PERSONS;
-	public final int THREEWEEKS;
-	
 	private short[] chrom;
 	private TShortArrayList personArray;
 	
-	public Fitness(int persons, int threeWeeks) {
-		PERSONS = persons;
-		THREEWEEKS = threeWeeks;
-		
-		personArray = new TShortArrayList(PERSONS);
+	public Fitness() {
+		personArray = new TShortArrayList(Info.getPersons());
 	}
 	
 	public void setChromosome(short[] chrom) {
@@ -33,53 +30,38 @@ public class Fitness {
 		short previousBathroom = 0, bathroom = 0;
 		short previousToilet = 0, toilet = 0;
 		short previousHallway = 0, hallway = 0;
+		boolean recurrenceDetected = false;
 		int weekStart = 0;
 		
-		// For the first three weeks
-		for (int w = 0; w < 3; w++) {
-			weekStart = 0 * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING;
-			
-			previousKitchen = kitchen;
-			kitchen = (short) (chrom[weekStart] | chrom[weekStart + 1] | chrom[weekStart + 2]);
-			
-			if ((previousKitchen | kitchen) != (previousKitchen ^ kitchen)) { // Kitchen check
-				quality++;
-			} else {
-				previousToilet = toilet;
-				toilet = chrom[weekStart + 3];
-				if (previousToilet == toilet) { // Toilet check
-					quality++;
-				} else {
-					previousBathroom = bathroom;
-					bathroom = chrom[weekStart + 4];
-					if (previousBathroom == bathroom) { // Bathroom check
-						quality++;
-					}
-				}
-			}
-		}
-		
 		// Maybe check the first hallway task with the last week of previous schedule?
-		
-		for (int tw = 1; tw < THREEWEEKS; tw++) {
+		for (int tw = 0; tw < Info.getThreeWeeks(); tw++) {
 			for (int w = 0; w < 3; w++) {
 				weekStart = tw * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING;
+				recurrenceDetected = false;
 				
 				previousKitchen = kitchen;
 				kitchen = (short) (chrom[weekStart] | chrom[weekStart + 1] | chrom[weekStart + 2]);
 				
+				previousToilet = toilet;
+				toilet = chrom[weekStart + 3];
+				
+				previousBathroom = bathroom;
+				bathroom = chrom[weekStart + 4];
+				
 				if ((previousKitchen | kitchen) != (previousKitchen ^ kitchen)) { // Kitchen check
 					quality++;
+					recurrenceDetected = true;
+//					System.out.println("Recurred kitchen [" + (tw * 3 + w) + "]");
 				} else {
-					previousToilet = toilet;
-					toilet = chrom[weekStart + 3];
 					if (previousToilet == toilet) { // Toilet check
 						quality++;
+						recurrenceDetected = true;
+//						System.out.println("Recurred toilet [" + (tw * 3 + w) + "]");
 					} else {
-						previousBathroom = bathroom;
-						bathroom = chrom[weekStart + 4];
 						if (previousBathroom == bathroom) { // Bathroom check
 							quality++;
+							recurrenceDetected = true;
+//							System.out.println("Recurred bathroom [" + (tw * 3 + w) + "]");
 						}
 					}
 				}
@@ -89,7 +71,7 @@ public class Fitness {
 			previousHallway = hallway;
 			hallway = (short) (chrom[weekStart + 5] | chrom[weekStart + 6]);
 			
-			if ((previousHallway | hallway) != (previousHallway ^ hallway)) {
+			if ((previousHallway | hallway) != (previousHallway ^ hallway) && !recurrenceDetected) {
 				quality++;
 			}
 		}
@@ -102,13 +84,14 @@ public class Fitness {
 	 * The lower the better!
 	 * @return The amount of weeks in which a double was found
 	 */
-	public int getInjectionQuality() { // TODO: Is there a better way to do this (detecting when a number appears twice in a sequence)?
+	public int getInjectionQuality() { // TODO: Is there a better way to do this (detecting when a number appears twice in a sequence)? Answer: yes. http://stackoverflow.com/questions/1532819/algorithm-efficient-way-to-remove-duplicate-integers-from-an-array With a merge sort that ignores doubles. Has some overhead though
 		int quality = 0;
 		int weekStart = 0;
-		
-		for (int tw = 1; tw < THREEWEEKS; tw++) {
+		boolean doubleDetected = false;
+		for (int tw = 0; tw < Info.getThreeWeeks(); tw++) {
 			for (int w = 0; w < 3; w++) {
 				weekStart = tw * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING;
+				doubleDetected = false;
 				personArray.resetQuick();
 				personArray.add(chrom[weekStart]);
 				
@@ -116,6 +99,7 @@ public class Fitness {
 				for (int j = 1; j < Info.JOBS_EXCLUDING; j++) {
 					if (personArray.contains(chrom[weekStart + j])) {
 						quality++;
+						doubleDetected = true;
 						break;
 					} else {
 						personArray.add(chrom[weekStart + j]);
@@ -124,12 +108,14 @@ public class Fitness {
 			}
 			
 			// Hallway check
-			if (personArray.contains(chrom[weekStart + 5])) {
-				quality++;
-			} else {
-				personArray.add(chrom[weekStart + 5]);
-				if (personArray.contains(chrom[weekStart + 6])) {
+			if (!doubleDetected) {
+				if (personArray.contains(chrom[weekStart + 5])) {
 					quality++;
+				} else {
+					personArray.add(chrom[weekStart + 5]);
+					if (personArray.contains(chrom[weekStart + 6])) {
+						quality++;
+					}
 				}
 			}
 		}
@@ -141,11 +127,11 @@ public class Fitness {
 	 * The lower the better!
 	 * @return The amount of person/job pairs that where unused
 	 */
-	public int getPerfectAssignmentQuality() {
+	public int getPerfectAssignmentQuality() { // TODO
 		short kitchen = 0, toilet = 0, bathroom = 0, hallway = 0;
 		int weekStart = 0;
 		
-		for (int tw = 1; tw < THREEWEEKS; tw++) {
+		for (int tw = 0; tw < Info.getThreeWeeks(); tw++) {
 			for (int w = 0; w < 3; w++) {
 				weekStart = tw * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING;
 				
@@ -156,7 +142,12 @@ public class Fitness {
 			}
 		}
 		
-		int quality = 4 * 11 - (ShortHammingWeight.ones[kitchen] + ShortHammingWeight.ones[toilet] + ShortHammingWeight.ones[bathroom] + ShortHammingWeight.ones[hallway]);
+//		System.out.println("Kitchen: " + kitchen + " >=> " + ShortHammingWeight.ones[kitchen]);
+//		System.out.println("Toilet: " + toilet + " >=> " + ShortHammingWeight.ones[toilet]);
+//		System.out.println("Bathroom: " + bathroom + " >=> " + ShortHammingWeight.ones[bathroom]);
+//		System.out.println("Hallway: " + hallway + " >=> " + ShortHammingWeight.ones[hallway]);
+		
+		int quality = 4 * Info.getPersons() - (ShortHammingWeight.ones[kitchen] + ShortHammingWeight.ones[toilet] + ShortHammingWeight.ones[bathroom] + ShortHammingWeight.ones[hallway]);
 		
 		return quality;
 	}
@@ -172,7 +163,22 @@ public class Fitness {
 	}
 	
 	public static void main(String[] args) {
+		Info.setup(7, 10);
 		
+		Fitness fitness = new Fitness();
+		
+		int amount = 10000;
+		for (int i = 0; i < amount; i++) {
+			Individual ind = new Individual().randomize();
+			String result = FitnessDebugger.evaluate(ind, fitness);
+			if (result.contains("INCORRECTLY")) {
+				System.out.println(result);
+				
+				return;
+			}
+		}
+		
+		System.out.println(amount + " rosters tested successfully!");
 	}
 
 }

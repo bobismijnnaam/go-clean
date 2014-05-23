@@ -41,6 +41,29 @@ public class Individual {
 		return dirty;
 	}
 	
+	@Override
+	public String toString() {
+		String result = "";
+		for (int tw = 0; tw < Info.getThreeWeeks(); tw++) {
+			for (int w = 0; w < 2; w++) {
+				for (int j = 0; j < 5; j++) {
+					result += chrom[tw * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING + j];
+					result += "\t";
+				}
+				result += "\n";
+			}
+			
+			for (int j = 0; j < 7; j++) {
+				result += chrom[tw * Info.JOBS_THREEWEEKS + 2 * Info.JOBS_EXCLUDING + j];
+				result += "\t";
+			}
+			
+			if (tw != Info.getThreeWeeks() - 1) result += "\n";
+		}
+		
+		return result;
+	}
+	
 	public static final void crossover(Individual first, Individual second) {
 		int pos = Info.nextInt(Info.getTotalJobs());
 		
