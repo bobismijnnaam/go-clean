@@ -1,18 +1,13 @@
 package nl.plusminos.alcleantraz.peach;
 
-import nl.plusminos.alcleantraz.utils.HighQualityRandom;
-
 public class Individual {
-	public final int THREEWEEKS;
-	
 	private final short[] chrom;
 	private int fitness;
 	
 	private boolean dirty = true;
 	
-	public Individual(int threeWeeks) {
-		THREEWEEKS = threeWeeks;
-		chrom = new short[Info.JOBS_THREEWEEKS * THREEWEEKS];
+	public Individual() {
+		chrom = new short[Info.JOBS_THREEWEEKS * Info.getThreeWeeks()];
 	}
 	
 	public Individual randomize() {
@@ -49,6 +44,16 @@ public class Individual {
 	public static final void crossover(Individual first, Individual second) {
 		int pos = Info.nextInt(Info.getTotalJobs());
 		
-		// TODO
+		short t;
+		short[] chrom1 = first.getChromosome();
+		short[] chrom2 = second.getChromosome();
+		for (int i = pos; i < Info.getTotalJobs(); i++) {
+			t = chrom1[i];
+			chrom1[i] = chrom2[i];
+			chrom2[i] = t;
+		}
+		
+		first.dirty = true;
+		second.dirty = true;
 	}
 }
