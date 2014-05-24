@@ -18,7 +18,7 @@ public class Info {
 	public static final int JOB_HALLWAY = 3;
 	
 	public static final int POPSIZE = 1200;
-	public static final int MAXGENERATION = 5000;
+	public static final int MAXGENERATION = 20000;
 	
 	public static final float MUTATIONCHANCE = 0.2f; // 0.2
 	public static final float XOVERCHANCE = 0.8f; // 0.8

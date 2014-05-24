@@ -76,7 +76,7 @@ public class FitnessDebugger {
 		if (resultAssignment == assignment &&
 				resultInjection == doubles &&
 				resultRecurrence == recurrence) {
-			result += "\nRoster evaluated CORRECTLY with endscore " + (assignment + doubles + recurrence);
+			result += "\nRoster evaluated CORRECTLY with endscore " + (assignment + doubles + recurrence + resultDistribution);
 		} else {
 			result += "\nRoster evaluated INCORRECTLY";
 		}

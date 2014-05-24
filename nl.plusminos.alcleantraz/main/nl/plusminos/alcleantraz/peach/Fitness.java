@@ -12,13 +12,9 @@ import nl.plusminos.alcleantraz.utils.ShortHammingWeight;
 public class Fitness {
 	private short[] chrom;
 	private TShortArrayList personArray;
-	public final int totalScore;
-	
 	
 	public Fitness() {
 		personArray = new TShortArrayList(Info.getPersons());
-		
-		totalScore = Info.getThreeWeeks() * 3 * 2 + Info.getPersons() * 4;
 	}
 	
 	public void setChromosome(short[] chrom) {
@@ -195,8 +191,9 @@ public class Fitness {
 			int sum = getPerfectAssignmentQuality();
 			sum += getInjectionQuality();
 			sum += getRecurrenceQuality();
+			sum += gradeDistribution(); // TODO: Bottleneck!
 			
-			individual.setFitness(totalScore - sum);
+			individual.setFitness(sum);
 		}
 	}
 	

@@ -2,7 +2,7 @@ package nl.plusminos.alcleantraz.peach;
 
 public class Individual {
 	private final short[] chrom;
-	private int fitness;
+	private float fitness = Integer.MAX_VALUE;
 	
 	private boolean dirty = true;
 	
@@ -29,7 +29,7 @@ public class Individual {
 		dirty = true;
 	}
 
-	public int getFitness() {
+	public float getFitness() {
 		return fitness;
 	}
 
