@@ -3,6 +3,7 @@ package nl.plusminos.alcleantraz.peach;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+// TODO: Display job counts per person (per job & total)
 public class FitnessDebugger {
 	public static String evaluate(Individual individual, Fitness fitness) {
 		short[] chrom = individual.getChromosome();
@@ -65,11 +66,13 @@ public class FitnessDebugger {
 		int resultAssignment = fitness.getPerfectAssignmentQuality();
 		int resultInjection = fitness.getInjectionQuality();
 		int resultRecurrence = fitness.getRecurrenceQuality();
+		float resultDistribution = fitness.gradeDistribution();
 		
 		result += "\n[Test results]";
 		result += "\nPerfect assignment: " + resultAssignment + "(" + assignment +")";
 		result += "\nInjection: " + resultInjection + "(" + doubles + ")";
 		result += "\nRecurrence: " + resultRecurrence + "(" + recurrence + ")";
+		result += "\nDistribution: " + resultDistribution;
 		if (resultAssignment == assignment &&
 				resultInjection == doubles &&
 				resultRecurrence == recurrence) {

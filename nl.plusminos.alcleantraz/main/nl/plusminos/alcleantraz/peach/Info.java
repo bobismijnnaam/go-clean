@@ -5,7 +5,8 @@ import java.util.Random;
 import nl.plusminos.alcleantraz.utils.HighQualityRandom;
 
 public class Info {
-	public static final Random rand = new HighQualityRandom();
+//	public static final Random rand = new HighQualityRandom();
+	public static final Random rand = new Random();
 	
 	public static final int JOBS_EXCLUDING = 5;
 	public static final int JOBS_INCLUDING = 7;
@@ -15,6 +16,13 @@ public class Info {
 	public static final int JOB_TOILET = 1;
 	public static final int JOB_SHOWER = 2;
 	public static final int JOB_HALLWAY = 3;
+	
+	public static final int POPSIZE = 1200;
+	public static final int MAXGENERATION = 5000;
+	
+	public static final float MUTATIONCHANCE = 0.2f; // 0.2
+	public static final float XOVERCHANCE = 0.8f; // 0.8
+	public static final int ATTEMPTS = 5;
 	
 	private static int PERSONS = -1;
 	private static int THREEWEEKS = -1;

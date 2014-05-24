@@ -6,7 +6,7 @@ import jenes.chromosome.Chromosome;
 public class Utils {
 
 	private Utils() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public static void reportGeneration(GeneticAlgorithm<? extends Chromosome<?>> ga) {

@@ -51,11 +51,9 @@ public class BucketList<T> {
 			return false;
 		}
 		
-		buckets[currentBucket].add(obj);
-		
 		size++;
 		
-		return true;
+		return buckets[currentBucket].add(obj);
 	}
 
 	public int size() {
@@ -105,10 +103,6 @@ public class BucketList<T> {
 		
 		System.out.println();
 		bl.reset();
-		
-//		for (int i = 0; i < 1000; i++) {
-//			System.out.println(bl.get(i));
-//		}
 		
 		for (int i = 0; i < 1000; i++) {
 			bl.add(i);

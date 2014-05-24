@@ -48,7 +48,7 @@ public class Bucket<T> {
 	}
 	
 	public boolean add(T obj) {
-		if (size != array.length) {
+		if (size < array.length) {
 			size++;
 			array[size - 1] = obj;
 			return true;

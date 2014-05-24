@@ -4,15 +4,21 @@ import gnu.trove.list.array.TShortArrayList;
 
 import java.util.ArrayList;
 
+import jenes.chromosome.IntegerChromosome;
 import nl.plusminos.alcleantraz.utils.ShortHammingWeight;
 
-// TODO: The only thing each function does is loop through all the weeks. It IS possible to merge them together!
+// TODO: Add distribution to standard evaluation?
+// The only thing each function does is loop through all the weeks. It IS possible to merge them together!
 public class Fitness {
 	private short[] chrom;
 	private TShortArrayList personArray;
+	public final int totalScore;
+	
 	
 	public Fitness() {
 		personArray = new TShortArrayList(Info.getPersons());
+		
+		totalScore = Info.getThreeWeeks() * 3 * 2 + Info.getPersons() * 4;
 	}
 	
 	public void setChromosome(short[] chrom) {
@@ -84,7 +90,7 @@ public class Fitness {
 	 * The lower the better!
 	 * @return The amount of weeks in which a double was found
 	 */
-	public int getInjectionQuality() { // TODO: Is there a better way to do this (detecting when a number appears twice in a sequence)? Answer: yes. http://stackoverflow.com/questions/1532819/algorithm-efficient-way-to-remove-duplicate-integers-from-an-array With a merge sort that ignores doubles. Has some overhead though
+	public int getInjectionQuality() { // Is there a better way to do this (detecting when a number appears twice in a sequence)? Answer: yes. http://stackoverflow.com/questions/1532819/algorithm-efficient-way-to-remove-duplicate-integers-from-an-array With a merge sort that ignores doubles. Has some overhead though
 		int quality = 0;
 		int weekStart = 0;
 		boolean doubleDetected = false;
@@ -127,7 +133,7 @@ public class Fitness {
 	 * The lower the better!
 	 * @return The amount of person/job pairs that where unused
 	 */
-	public int getPerfectAssignmentQuality() { // TODO
+	public int getPerfectAssignmentQuality() {
 		short kitchen = 0, toilet = 0, bathroom = 0, hallway = 0;
 		int weekStart = 0;
 		
@@ -152,14 +158,46 @@ public class Fitness {
 		return quality;
 	}
 	
+	/**
+	 * The lower the better!
+	 * @return I think the variance?
+	 */
+	public float gradeDistribution() {
+		float jpp = (float) Info.getTotalJobs() / (float) Info.getPersons();
+		float[] hasJobs = new float[Info.getPersons()];
+		
+		int person, jobPos;
+		
+		for (int tw = 0; tw < Info.getThreeWeeks(); tw++) {
+			for (int w = 0; w < 3; w++) {
+				for (int j = 0; j < (w == 3 ? 7 : 5); j++) {
+					jobPos = tw * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING + j; 
+					person = chrom[jobPos];
+					hasJobs[(int) (Math.log(person) / Math.log(2))]++;
+				}
+			}
+		}
+		
+		float total = 0;
+		for (int p = 0; p < Info.getPersons(); p++) {
+			hasJobs[p] -= jpp;
+			hasJobs[p] *= hasJobs[p];
+			total += hasJobs[p];
+		}
+		
+		return total;
+	}
+	
 	public void evaluate(Individual individual) {
 		setChromosome(individual.getChromosome());
 		
-		int sum = getPerfectAssignmentQuality();
-		sum += getInjectionQuality();
-		sum += getRecurrenceQuality();
-		
-		individual.setFitness(sum);
+		if (individual.isDirty()) {
+			int sum = getPerfectAssignmentQuality();
+			sum += getInjectionQuality();
+			sum += getRecurrenceQuality();
+			
+			individual.setFitness(totalScore - sum);
+		}
 	}
 	
 	public static void main(String[] args) {
