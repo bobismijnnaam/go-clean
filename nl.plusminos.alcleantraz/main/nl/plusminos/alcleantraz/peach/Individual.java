@@ -1,10 +1,11 @@
 package nl.plusminos.alcleantraz.peach;
 
-public class Individual {
+public class Individual implements Comparable<Individual> {
 	private final short[] chrom;
 	private float fitness = Integer.MAX_VALUE;
 	
 	private boolean dirty = true;
+	private boolean isViable = false;
 	
 	public Individual() {
 		chrom = new short[Info.JOBS_THREEWEEKS * Info.getThreeWeeks()];
@@ -44,6 +45,14 @@ public class Individual {
 	
 	public boolean isDirty() {
 		return dirty;
+	}
+	
+	public void setViable(boolean b) {
+		isViable = b;
+	}
+	
+	public boolean isViable() {
+		return isViable;
 	}
 	
 	public String toString(boolean simple) {
@@ -110,6 +119,24 @@ public class Individual {
 		}
 		
 		return ind;
+	}
+	
+	// this.compareTo(that)
+	@Override
+	public int compareTo(Individual o) {
+		if (o.isViable() && !isViable()) {
+			return -1;
+		} else if (!o.isViable() && isViable()) {
+			return 1;
+		} else {
+			if (getFitness() < o.getFitness()) {
+				return 1;
+			} else if (getFitness() > o.getFitness()) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
 	}
 	
 	public static void main(String[] args) {

@@ -69,6 +69,7 @@ public class Info {
 	
 	public static String getName(short id) {
 		return "" + ((char) (65 + Math.log(id) / Math.log(2)));
+//		return ""+id;
 	}
 	
 }

@@ -70,14 +70,15 @@ public class Scheduler implements Runnable {
 			otherPop = t;
 			
 			bestIndividual = pop.get(0);
+			fitness.evaluate(bestIndividual);
 			for (int j = 1; j < Info.POPSIZE; j++) {
 				fitness.evaluate(pop.get(j));
-				if (bestIndividual.getFitness() > pop.get(j).getFitness()) {
+				if (pop.get(j).compareTo(bestIndividual) > 0) {
 					bestIndividual = pop.get(j);
 				}
 			}
 		
-			if (bestIndividual.getFitness() < perfectIndividual.getFitness()) {
+			if (bestIndividual.compareTo(perfectIndividual) > 0) {
 				perfectIndividual = new Individual(bestIndividual);
 				fitness.evaluate(perfectIndividual);
 			}
@@ -144,7 +145,7 @@ public class Scheduler implements Runnable {
 			Individual challenger = pop.get(k);
 			
 			if(candidate != challenger) {
-				if(challenger.getFitness() < candidate.getFitness()) {
+				if(challenger.compareTo(candidate) > 0) {
 					candidate = challenger;           
 				}
 			}

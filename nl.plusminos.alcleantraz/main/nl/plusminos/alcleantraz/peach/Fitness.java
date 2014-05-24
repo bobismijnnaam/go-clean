@@ -140,7 +140,9 @@ public class Fitness {
 				kitchen |= chrom[weekStart] | chrom[weekStart + 1] | chrom[weekStart + 2];
 				toilet |= chrom[weekStart + 3];
 				bathroom |= chrom[weekStart + 4];
-				hallway |= chrom[weekStart + 5] | chrom[weekStart + 6];
+				
+				if (w == 2)
+					hallway |= chrom[weekStart + 5] | chrom[weekStart + 6];
 			}
 		}
 		
@@ -156,7 +158,7 @@ public class Fitness {
 	
 	/**
 	 * The lower the better!
-	 * @return I think the variance?
+	 * @return The variance, probably (pun intended)
 	 */
 	public float gradeDistribution() {
 		float jpp = (float) Info.getTotalJobs() / (float) Info.getPersons();
@@ -188,12 +190,13 @@ public class Fitness {
 		setChromosome(individual.getChromosome());
 		
 		if (individual.isDirty()) {
-			int sum = getPerfectAssignmentQuality();
-			sum += getInjectionQuality();
-			sum += getRecurrenceQuality();
-			sum += gradeDistribution(); // TODO: Bottleneck!
+			int paq = getPerfectAssignmentQuality();
+			int ijq = getInjectionQuality();
+			int rq = getRecurrenceQuality();
+			float d = gradeDistribution(); // Bottleneck!
 			
-			individual.setFitness(sum);
+			individual.setViable(paq == ijq && ijq == rq && rq == 0);
+			individual.setFitness((int) (paq + ijq + rq + d));
 		}
 	}
 	

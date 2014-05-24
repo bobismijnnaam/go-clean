@@ -1,6 +1,7 @@
 package nl.plusminos.alcleantraz.peach;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 // TODO: Display job counts per person (per job & total)
@@ -30,13 +31,13 @@ public class FitnessDebugger {
 				}
 				
 				// Doubles checking (injection)
-				checkDoubles(chrom, params, w != 3, weekStart);
+				checkDoubles(chrom, params, w == 2, weekStart);
 
 				// Recurrence checking
-				checkRecurrence(chrom, params, w != 3, weekStart, w);
+				checkRecurrence(chrom, params, w == 2, weekStart, w);
 				
 				// Perfect assignment checking
-				checkAssignment(chrom, jobs, weekStart, w != 3);
+				checkAssignment(chrom, jobs, weekStart, w == 2);
 				
 				// Output & parse week
 				result += (tw * 3 + w) + ":\t";
@@ -69,10 +70,23 @@ public class FitnessDebugger {
 		float resultDistribution = fitness.gradeDistribution();
 		
 		result += "\n[Test results]";
+		result += "\n" + (individual.isViable() ? "VIABLE" : "UNVIABLE");
 		result += "\nPerfect assignment: " + resultAssignment + "(" + assignment +")";
 		result += "\nInjection: " + resultInjection + "(" + doubles + ")";
 		result += "\nRecurrence: " + resultRecurrence + "(" + recurrence + ")";
 		result += "\nDistribution: " + resultDistribution;
+		result += "\nJobs per person: ";
+		ArrayList<HashMap<Integer, Integer>> totals = displayDistribution(chrom);
+		for (int i = 1; i < Math.pow(2, Info.getPersons()); i *= 2) {
+			result += "\n" + Info.getName((short) i) + ": ";
+			for (int j = 0; j < 5; j++) {
+				HashMap<Integer, Integer> hm = totals.get(j);
+				result += hm.get(i) == null ? 0 : hm.get(i);
+				if (j != 4) {
+					result += " | ";
+				}
+			}
+		}
 		if (resultAssignment == assignment &&
 				resultInjection == doubles &&
 				resultRecurrence == recurrence) {
@@ -80,6 +94,8 @@ public class FitnessDebugger {
 		} else {
 			result += "\nRoster evaluated INCORRECTLY";
 		}
+		
+		result += "\n";
 		
 		return result;
 	}
@@ -152,6 +168,34 @@ public class FitnessDebugger {
 			}
 			doubles.add(chrom[weekStart + j]);
 		}
+	}
+	
+	public static ArrayList<HashMap<Integer, Integer>> displayDistribution(short[] chrom) {
+		ArrayList<HashMap<Integer, Integer>> totals = new ArrayList<HashMap<Integer, Integer>>(5);
+		for (int i = 0; i < 5; i++) {
+			totals.add(new HashMap<Integer, Integer>());
+		}
+		
+		for (int tw = 0; tw < Info.getThreeWeeks(); tw++) {
+			for (int w = 0; w < 3; w++) {
+				int weekStart = tw * Info.JOBS_THREEWEEKS + w * Info.JOBS_EXCLUDING;
+				
+				for (int j = 0; j < (w == 2 ? 7 : 5); j++) {
+					HashMap<Integer, Integer> job = totals.get(Info.JOB_KITCHEN);
+					job = (j == 3) ? totals.get(Info.JOB_TOILET) : job;
+					job = (j == 4) ? totals.get(Info.JOB_SHOWER) : job;
+					job = (j > 4) ? totals.get(Info.JOB_HALLWAY) : job;
+					int person = chrom[weekStart + j];
+					int count = job.get(person) == null ? 0 : job.get(person);
+					job.put(person, count + 1);
+					
+					count = totals.get(4).get(person) == null ? 0 : totals.get(4).get(person);
+					totals.get(4).put(person, count + 1);
+				}
+			}
+		}
+		
+		return totals;
 	}
 	
 	
