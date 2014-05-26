@@ -332,23 +332,3 @@ public class AlcaFit extends Fitness<IntegerChromosome> {
 		}
 	}
 }
-
-//int score = 0;
-//if (noDoubles) {
-//	score++;
-//}
-//if (noOverlap) {
-//	score++;
-//}
-//if (hasEachJobOnce) {
-//	score++;
-//}
-
-//individual.setScore(score);
-
-// Test if this schedule has doubles in a week. False if it has, true if it doesn't
-//boolean noDoubles = hasNoDoublesPerWeek(chrom);
-//
-//boolean noOverlap = hasNoOverlap(chrom);
-//
-//boolean hasEachJobOnce = hasPerfectAssignment(chrom);

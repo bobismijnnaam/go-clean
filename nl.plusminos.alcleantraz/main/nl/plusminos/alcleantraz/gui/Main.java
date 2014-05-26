@@ -17,6 +17,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
+import nl.plusminos.alcleantraz.peach.Individual;
+import nl.plusminos.alcleantraz.peach.Info;
 
 public class Main implements ActionListener, KeyListener{
 	public final JPanel panel;
@@ -110,9 +112,12 @@ public class Main implements ActionListener, KeyListener{
 			// Setup finding schedule screen
 			AlcleantrazGui.inst.screen.setVisible(false);
 			AlcleantrazGui.inst.screen.remove(panel);
-			AlcleantrazGui.inst.screen.add(AlcleantrazGui.inst.schedulePanel.panel);
 			
-			AlcleantrazGui.inst.schedulePanel.start(names, threeWeeks);
+//			AlcleantrazGui.inst.screen.add(AlcleantrazGui.inst.schedulePanel.panel);
+			Info.setup(names.length, threeWeeks);
+			AlcleantrazGui.inst.screen.add(AlcleantrazGui.inst.phaseOnePanel.panel);
+			AlcleantrazGui.inst.phaseOnePanel.start(names, new Individual().randomize());
+			
 			AlcleantrazGui.inst.screen.setVisible(true);
 		} else if (e.getSource() == remove) {
 			int[] selection = persons.getSelectedIndices();
