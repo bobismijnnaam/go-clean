@@ -13,6 +13,7 @@ public class AlcleantrazGui {
 	public final JFrame screen;
 	
 	// Panels
+	public static final AlcleantrazGui inst = new AlcleantrazGui();
 	public final Main mainPanel = new Main();
 	public final Search searchPanel = new Search();
 	public final Schedule schedulePanel = new Schedule();
@@ -28,14 +29,13 @@ public class AlcleantrazGui {
 		
 		screen = new JFrame("Alcleantraz{Ginger}");
 		screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		screen.setSize(320, 300);
+		screen.setSize(320, 360);
 		screen.setVisible(true);
 		
-		screen.setLayout(new BorderLayout());
-		screen.add(mainPanel.panel, BorderLayout.CENTER);
+//		screen.setLayout(new BorderLayout());
+		screen.add(mainPanel.panel);
 	}
 	
 	public static void main(String[] args) {
-		new AlcleantrazGui();
 	}
 }

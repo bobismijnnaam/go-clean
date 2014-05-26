@@ -195,7 +195,8 @@ public class Fitness {
 			int rq = getRecurrenceQuality();
 			float d = gradeDistribution(); // Bottleneck!
 			
-			individual.setViable(paq == ijq && ijq == rq && rq == 0);
+//			individual.setViable(paq == ijq && ijq == rq && rq == 0);
+			individual.setViable(paq <= 2 && ijq == rq && rq == 0);
 			individual.setFitness((int) (paq + ijq + rq + d));
 		}
 	}

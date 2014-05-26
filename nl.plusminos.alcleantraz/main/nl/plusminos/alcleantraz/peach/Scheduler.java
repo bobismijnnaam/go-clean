@@ -4,14 +4,12 @@ import java.util.ArrayList;
 
 import nl.plusminos.alcleantraz.utils.BucketList.BucketList;
 
+// Based on: http://stackoverflow.com/questions/1575061/ga-written-in-java. Awesome post!
 // TODO: Realtime statistics
 // TODO: Remove distribution grading from Fitness.evaluate(). Collect all "perfect" individuals, pick the one with best distribution
 // Multithreading. Is this even needed?
 public class Scheduler implements Runnable {
-	
-	public final int THREADS;
-	
-//	BucketList<Individual> otherPop, pop;
+
 	ArrayList<Individual> pop, otherPop;
 	int[] totalFitness;
 	Fitness fitness;
@@ -19,10 +17,12 @@ public class Scheduler implements Runnable {
 	Individual perfectIndividual;
 	float perfectFitness;
 	
-	public Scheduler(int persons, int threeWeeks, int threads) {
+	public Individual foundIndividual = null;
+	public int generation = 0;
+	public int foundFitness = 9999;
+	
+	public Scheduler(int persons, int threeWeeks) {
 		Info.setup(persons, threeWeeks);
-		
-		THREADS = threads; // Add threading support
 		
 //		pop = new BucketList<Individual>(Individual.class, Info.BUCKETSIZE, Info.BUCKETS);
 //		otherPop = new BucketList<Individual>(Individual.class, Info.BUCKETSIZE, Info.BUCKETS);
@@ -91,6 +91,9 @@ public class Scheduler implements Runnable {
 				
 				 System.out.println(FitnessDebugger.evaluate(bestIndividual, fitness));
 			}
+			
+			generation = i;
+			foundFitness = (int) bestIndividual.getFitness();
 		}
 		
 //		bestFitness = pop.get(0).getFitness();
@@ -102,6 +105,8 @@ public class Scheduler implements Runnable {
 //			}
 //		}
 		System.out.println(FitnessDebugger.evaluate(perfectIndividual, fitness));
+		
+		foundIndividual = perfectIndividual;
 	}
 	
 //	public void prepareTotalArray() {
@@ -155,7 +160,7 @@ public class Scheduler implements Runnable {
 	} 
 	
 	public static void main(String[] args) {
-		Thread scheduler = new Thread(new Scheduler(11, 7, 4));
+		Thread scheduler = new Thread(new Scheduler(11, 5));
 		scheduler.start();
 	}
 
